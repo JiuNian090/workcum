@@ -294,8 +294,8 @@ const DataPage = () => {
       </div>
       
       {/* Login Section - 新增的登录板块 */}
-      <div className="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl border border-indigo-100">
-        <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+      <div className="mt-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl border border-amber-100">
+        <div className="p-1 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div className="mb-4 md:mb-0">
@@ -351,14 +351,14 @@ const DataPage = () => {
       
       {/* Project Information Section - Enhanced UI */}
       <div className="mt-6 bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl border border-gray-200">
-        <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+        <div className="p-1 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
         <div className="p-6 md:p-8">
           <div className="flex flex-col items-start">
             <div className="mb-6 w-full">
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
                 {t('project.title')}
               </h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"></div>
+              <div className="w-20 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
             </div>
             
             <div className="space-y-4 mb-8 w-full">
