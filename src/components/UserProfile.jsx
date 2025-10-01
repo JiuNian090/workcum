@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Fab, Menu, MenuItem, Avatar, Divider, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Box } from '@mui/material';
-import { AccountCircle, Sync, Person, ExitToApp, CloudUpload, CloudDownload } from '@mui/icons-material';
+import { AccountCircle, Sync, Person, ExitToApp, CloudUpload } from '@mui/icons-material';
 import { fetchDataFromSupabase, syncDataToSupabase } from '../services/dataSync';
 import { supabase } from '../supabaseClient';
 
@@ -101,7 +101,7 @@ const UserProfile = () => {
     setUsername(user?.user_metadata?.full_name || '');
   };
 
-  const handleSyncClick = async () => {
+  const handleUploadClick = async () => {
     handleClose();
     if (!user) return;
     
@@ -113,10 +113,31 @@ const UserProfile = () => {
         customShifts: JSON.parse(localStorage.getItem('customShifts') || '[]')
       };
       
-      // 同步到云端
-      await syncDataToSupabase(user.id, data);
+      // 上传到云端
+      const result = await syncDataToSupabase(user.id, data);
       
-      // 从云端获取最新数据
+      if (result.success) {
+        alert('数据上传成功！');
+      } else {
+        alert('数据上传失败：' + result.error.message);
+      }
+    } catch (error) {
+      console.error('数据上传失败:', error);
+      alert('数据上传失败，请重试');
+    }
+  };
+
+  const handleSyncClick = async () => {
+    handleClose();
+    if (!user) return;
+    
+    // 确认是否要覆盖本地数据
+    if (!window.confirm('此操作将从云端下载数据并覆盖本地数据，是否继续？')) {
+      return;
+    }
+    
+    try {
+      // 从云端获取数据
       const result = await fetchDataFromSupabase(user.id);
       if (result.success) {
         if (result.data.time_entries) {
@@ -131,6 +152,10 @@ const UserProfile = () => {
         // 触发storage事件以通知其他组件更新
         window.dispatchEvent(new Event('storage'));
         alert('数据同步成功！');
+        // 刷新页面以反映更改
+        window.location.reload();
+      } else {
+        alert('数据同步失败：' + result.error.message);
       }
     } catch (error) {
       console.error('数据同步失败:', error);
@@ -320,6 +345,21 @@ const UserProfile = () => {
               个人资料
             </MenuItem>
             <MenuItem 
+              onClick={handleUploadClick}
+              sx={{
+                py: 1.5,
+                px: 2,
+                fontSize: '15px',
+                fontWeight: 500,
+                '&:hover': {
+                  backgroundColor: '#f5f5f5'
+                }
+              }}
+            >
+              <CloudUpload sx={{ mr: 1.5, fontSize: 20 }} />
+              上传数据
+            </MenuItem>
+            <MenuItem 
               onClick={handleSyncClick}
               sx={{
                 py: 1.5,
@@ -332,7 +372,7 @@ const UserProfile = () => {
               }}
             >
               <Sync sx={{ mr: 1.5, fontSize: 20 }} />
-              数据同步
+              同步数据
             </MenuItem>
             <Divider />
             <MenuItem 
