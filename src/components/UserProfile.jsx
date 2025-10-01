@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Fab, Menu, MenuItem, Avatar, Divider, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Box } from '@mui/material';
 import { AccountCircle, Sync, Person, ExitToApp, CloudUpload, CloudDownload } from '@mui/icons-material';
 import { fetchDataFromSupabase, syncDataToSupabase } from '../services/dataSync';
+import { supabase } from '../supabaseClient';
 
 const UserProfile = () => {
   const { user, signOut, signIn, signUp } = useAuth();
@@ -196,10 +197,31 @@ const UserProfile = () => {
   };
 
   const handleSaveProfile = async () => {
-    // 这里应该保存用户的个人资料，包括头像和用户名
-    // 在实际应用中，您可能需要将头像上传到存储服务并将URL保存到用户元数据中
-    alert('个人资料保存成功！');
-    setOpenProfile(false);
+    if (!user) return;
+
+    try {
+      // 准备要更新的用户元数据
+      const updates = {
+        data: {
+          full_name: username,
+          avatar_url: avatarPreview || user?.user_metadata?.avatar_url || null
+        }
+      };
+  
+      // 调用Supabase API更新用户资料
+      const { data, error } = await supabase.auth.updateUser(updates);
+  
+      if (error) {
+        throw error;
+      }
+  
+      // 更新成功提示
+      alert('个人资料保存成功！');
+      setOpenProfile(false);
+    } catch (error) {
+      console.error('保存个人资料失败:', error);
+      alert('保存个人资料失败：' + error.message);
+    }
   };
 
   const getAvatarSrc = () => {
