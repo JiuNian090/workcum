@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Fab, Menu, MenuItem, Avatar, Divider, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { Fab, Menu, MenuItem, Avatar, Divider, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Box } from '@mui/material';
 import { AccountCircle, Sync, Person, ExitToApp, CloudUpload, CloudDownload } from '@mui/icons-material';
 import { fetchDataFromSupabase, syncDataToSupabase } from '../services/dataSync';
 
@@ -11,13 +11,75 @@ const UserProfile = () => {
   const [openProfile, setOpenProfile] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // 新增确认密码状态
   const [username, setUsername] = useState(user?.user_metadata?.full_name || '');
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0); // 密码强度状态
+  const [passwordFeedback, setPasswordFeedback] = useState([]); // 密码反馈信息
   const fileInputRef = useRef(null);
+
+  // 检查密码强度的函数
+  const checkPasswordStrength = (password) => {
+    const feedback = [];
+    let strength = 0;
+
+    // 长度检查
+    if (password.length >= 8) {
+      strength += 1;
+    } else {
+      feedback.push('密码至少需要8个字符');
+    }
+
+    // 包含大写字母
+    if (/[A-Z]/.test(password)) {
+      strength += 1;
+    } else {
+      feedback.push('密码应包含至少一个大写字母');
+    }
+
+    // 包含小写字母
+    if (/[a-z]/.test(password)) {
+      strength += 1;
+    } else {
+      feedback.push('密码应包含至少一个小写字母');
+    }
+
+    // 包含数字
+    if (/\d/.test(password)) {
+      strength += 1;
+    } else {
+      feedback.push('密码应包含至少一个数字');
+    }
+
+    // 包含特殊字符
+    if (/[^A-Za-z0-9]/.test(password)) {
+      strength += 1;
+    } else {
+      feedback.push('密码应包含至少一个特殊字符');
+    }
+
+    setPasswordStrength(strength);
+    setPasswordFeedback(feedback);
+    return strength;
+  };
+
+  // 获取密码强度显示颜色
+  const getPasswordStrengthColor = () => {
+    if (passwordStrength <= 2) return 'error';
+    if (passwordStrength <= 3) return 'warning';
+    return 'success';
+  };
+
+  // 获取密码强度文本
+  const getPasswordStrengthText = () => {
+    if (passwordStrength <= 2) return '弱';
+    if (passwordStrength <= 3) return '中等';
+    return '强';
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -87,6 +149,20 @@ const UserProfile = () => {
     
     try {
       if (isRegister) {
+        // 注册时检查密码强度
+        if (passwordStrength < 3) {
+          setError('密码强度不足，请按照提示改善密码安全性');
+          setLoading(false);
+          return;
+        }
+        
+        // 检查密码确认
+        if (password !== confirmPassword) {
+          setError('两次输入的密码不一致');
+          setLoading(false);
+          return;
+        }
+        
         await signUp(email, password, { full_name: username });
       } else {
         await signIn(email, password);
@@ -94,6 +170,7 @@ const UserProfile = () => {
       setOpenLogin(false);
       setEmail('');
       setPassword('');
+      setConfirmPassword(''); // 清空确认密码
       setUsername('');
     } catch (error) {
       setError(error.message);
@@ -323,7 +400,12 @@ const UserProfile = () => {
               type="password"
               fullWidth
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (isRegister) {
+                  checkPasswordStrength(e.target.value);
+                }
+              }}
               variant="outlined"
               className="mb-2"
               InputProps={{
@@ -332,6 +414,75 @@ const UserProfile = () => {
                 }
               }}
             />
+            
+            {/* 密码强度指示器 */}
+            {isRegister && password && (
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="body2" sx={{ mr: 1 }}>
+                    密码强度:
+                  </Typography>
+                  <Typography 
+                    variant="body2" 
+                    color={getPasswordStrengthColor()}
+                    fontWeight="bold"
+                  >
+                    {getPasswordStrengthText()}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden' }}>
+                  {[...Array(5)].map((_, i) => (
+                    <Box 
+                      key={i}
+                      sx={{ 
+                        flex: 1, 
+                        backgroundColor: i < passwordStrength ? 
+                          (passwordStrength <= 2 ? '#f44336' : 
+                           passwordStrength <= 3 ? '#ff9800' : '#4caf50') : 
+                          '#e0e0e0',
+                        mr: 0.5
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            )}
+            
+            {/* 密码安全性提示 */}
+            {isRegister && password && passwordFeedback.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  密码安全性提示:
+                </Typography>
+                <ul style={{ margin: 0, paddingLeft: 20 }}>
+                  {passwordFeedback.map((item, index) => (
+                    <li key={index} style={{ fontSize: '0.8rem', color: '#f44336' }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </Box>
+            )}
+            
+            {/* 确认密码字段 */}
+            {isRegister && (
+              <TextField
+                margin="normal"
+                label="确认密码"
+                type="password"
+                fullWidth
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                variant="outlined"
+                className="mb-2"
+                InputProps={{
+                  style: {
+                    borderRadius: '8px',
+                  }
+                }}
+              />
+            )}
+            
             {error && (
               <div 
                 className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm"
@@ -392,7 +543,16 @@ const UserProfile = () => {
           <div className="w-full text-center text-sm text-gray-600">
             {isRegister ? '已有账户？' : '还没有账户？'}
             <Button 
-              onClick={() => setIsRegister(!isRegister)}
+              onClick={() => {
+                setIsRegister(!isRegister);
+                // 切换时重置密码相关状态
+                if (!isRegister) {
+                  setPassword('');
+                  setConfirmPassword('');
+                  setPasswordStrength(0);
+                  setPasswordFeedback([]);
+                }
+              }}
               style={{
                 textTransform: 'none',
                 minWidth: 'auto',
