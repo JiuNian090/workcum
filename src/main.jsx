@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import './styles/globals.css'
 import './i18n'
+import { AuthProvider } from './context/AuthContext'
 
 // 添加PWA注册代码
 import { registerSW } from 'virtual:pwa-register'
@@ -43,8 +44,10 @@ window.addEventListener('appinstalled', () => {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>,
 )

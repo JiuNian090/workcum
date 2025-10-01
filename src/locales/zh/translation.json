@@ -72,6 +72,9 @@
   },
   "project": {
     "title": "项目介绍",
+    "user_account": "用户账户",
+    "login_description": "登录或注册账户以同步您的数据到云端，实现多设备间的数据共享。",
+    "login_prompt": "点击左上角头像图标进行登录或注册",
     "introduction": {
       "part1": "这是一个专为工作时间管理而设计的高效工具，旨在帮助用户轻松跟踪和管理工作时间。项目最初是为了给我的老婆大人思语小姐姐创建一个方便计算工时的工具，现已发展成为一个功能完整的工时跟踪系统。",
       "part2": "如果您有更好的建议或者问题反馈，可以点击联系乐乐。"
@@ -261,6 +264,13 @@
     "import_success": "数据导入成功！",
     "import_error": "导入数据时出错。请检查文件格式。",
     "management": "数据管理",
+    "upload": "上传",
+    "sync": "同步",
+    "upload_success": "数据上传成功！",
+    "upload_error": "数据上传失败: ",
+    "sync_success": "数据同步成功！",
+    "sync_error": "数据同步失败: ",
+    "sync_confirm": "确定要从云端同步数据吗？这将覆盖您当前的本地数据。",
     "export": {
       "title": "导出数据",
       "description": "将所有数据导出为JSON文件，以便备份。",

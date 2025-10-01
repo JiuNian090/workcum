@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import { syncDataToSupabase, fetchDataFromSupabase } from '../services/dataSync';
+import UserProfile from '../components/UserProfile';
 import ConfirmOverrideModal from '../components/ConfirmOverrideModal';
 import Modal from '../components/Modal';
 
 const DataPage = () => {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [exportStatus, setExportStatus] = useState('');
   const [importStatus, setImportStatus] = useState('');
   const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
   const [pendingImportFile, setPendingImportFile] = useState(null);
   const [isExportFileNameModalOpen, setIsExportFileNameModalOpen] = useState(false);
   const [exportFileName, setExportFileName] = useState('');
+  const [syncStatus, setSyncStatus] = useState('');
 
   // Export all data to JSON - 只导出本地存储数据为JSON格式
   const handleExportAllData = () => {
@@ -130,6 +135,81 @@ const DataPage = () => {
     i18n.changeLanguage(newLang);
   };
 
+  // Upload local data to Supabase
+  const handleUpload = async () => {
+    if (!user) return;
+    
+    try {
+      // Get all data from localStorage
+      const timeEntries = JSON.parse(localStorage.getItem('timeEntries') || '[]');
+      const schedules = JSON.parse(localStorage.getItem('schedules') || '[]');
+      const customShifts = JSON.parse(localStorage.getItem('customShifts') || '[]');
+      
+      // Create data object
+      const data = {
+        timeEntries,
+        schedules,
+        customShifts
+      };
+      
+      // Sync data to Supabase
+      const result = await syncDataToSupabase(user.id, data);
+      
+      if (result.success) {
+        setSyncStatus(t('data.upload_success'));
+        setTimeout(() => setSyncStatus(''), 3000);
+      } else {
+        setSyncStatus(t('data.upload_error') + result.error.message);
+        setTimeout(() => setSyncStatus(''), 3000);
+      }
+    } catch (error) {
+      setSyncStatus(t('data.upload_error') + error.message);
+      setTimeout(() => setSyncStatus(''), 3000);
+    }
+  };
+
+  // Sync data from Supabase to local storage
+  const handleSync = async () => {
+    if (!user) return;
+    
+    // Confirm with user before overriding local data
+    if (!window.confirm(t('data.sync_confirm'))) {
+      return;
+    }
+    
+    try {
+      // Fetch data from Supabase
+      const result = await fetchDataFromSupabase(user.id);
+      
+      if (result.success) {
+        const { timeEntries, schedules, customShifts } = result.data;
+        
+        // Save to localStorage
+        if (timeEntries) {
+          localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+        }
+        if (schedules) {
+          localStorage.setItem('schedules', JSON.stringify(schedules));
+        }
+        if (customShifts) {
+          localStorage.setItem('customShifts', JSON.stringify(customShifts));
+        }
+        
+        setSyncStatus(t('data.sync_success'));
+        setTimeout(() => setSyncStatus(''), 3000);
+        
+        // Reload the page to reflect changes
+        window.location.reload();
+      } else {
+        setSyncStatus(t('data.sync_error') + result.error.message);
+        setTimeout(() => setSyncStatus(''), 3000);
+      }
+    } catch (error) {
+      setSyncStatus(t('data.sync_error') + error.message);
+      setTimeout(() => setSyncStatus(''), 3000);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto w-full px-4">
       <ConfirmOverrideModal
@@ -211,6 +291,62 @@ const DataPage = () => {
         >
           {i18n.language === 'zh' ? 'EN' : '中文'}
         </button>
+      </div>
+      
+      {/* Login Section - 新增的登录板块 */}
+      <div className="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl border border-indigo-100">
+        <div className="p-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+        <div className="p-6 md:p-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="mb-4 md:mb-0">
+              <div className="flex items-center">
+                <UserProfile />
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 ml-3">
+                  {/* 使用用户名替代默认的"用户账户"标题 */}
+                  {user ? user.user_metadata?.full_name || user.email : t('project.user_account')}
+                </h2>
+              </div>
+              <p className="text-gray-600 text-sm md:text-base mt-2">
+                {t('project.login_description')}
+              </p>
+              {/* 添加未登录时的明确提示 */}
+              {!user && (
+                <p className="text-gray-600 text-sm md:text-base mt-2">
+                  {t('project.login_prompt')}
+                </p>
+              )}
+              {/* 上传和同步按钮 */}
+              {user && (
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                  <button
+                    onClick={handleUpload}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center text-sm font-medium shadow-sm"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    {t('data.upload')}
+                  </button>
+                  <button
+                    onClick={handleSync}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center justify-center text-sm font-medium shadow-sm"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    {t('data.sync')}
+                  </button>
+                </div>
+              )}
+              {/* 同步状态显示 */}
+              {syncStatus && (
+                <div className="mt-3 p-3 rounded-lg bg-blue-50 text-blue-700 text-sm">
+                  {syncStatus}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Project Information Section - Enhanced UI */}

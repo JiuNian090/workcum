@@ -1,14 +1,25 @@
 import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Fab, Box } from '@mui/material';
+import { Logout } from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
+import UserProfile from './UserProfile';
 
 const Layout = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'zh' ? 'en' : 'zh';
     i18n.changeLanguage(newLang);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   // Desktop navigation link active state styles
@@ -22,8 +33,8 @@ const Layout = () => {
       return `${baseClass} ${activeClass}`;
     }
     
-    // Matching for other paths
-    if (path !== "/" && location.pathname.startsWith(path)) {
+    // Exact matching for other paths
+    if (path !== "/" && location.pathname === path) {
       return `${baseClass} ${activeClass}`;
     }
     
@@ -41,8 +52,8 @@ const Layout = () => {
       return `${baseClass} ${activeClass}`;
     }
     
-    // Matching for other paths
-    if (path !== "/" && location.pathname.startsWith(path)) {
+    // Exact matching for other paths
+    if (path !== "/" && location.pathname === path) {
       return `${baseClass} ${activeClass}`;
     }
     
@@ -82,6 +93,7 @@ const Layout = () => {
                 </svg>
                 {t('navigation.data')}
               </Link>
+              <UserProfile />
             </div>
           </div>
         </nav>

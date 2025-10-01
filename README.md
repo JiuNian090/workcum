@@ -13,6 +13,8 @@
 - **响应式设计**: 优雅的响应式界面，完美适配移动设备、平板电脑和桌面设备
 - **本地数据存储**: 所有数据安全存储在浏览器本地，确保隐私和离线可用性
 - **便捷数据迁移**: 支持数据导出和导入功能，便于备份、转移或在不同设备间同步
+- **账户系统**: 支持用户注册和登录功能
+- **跨设备数据同步**: 登录后可在不同设备间自动同步数据
 
 ## 快速开始
 
@@ -90,6 +92,62 @@ npm run build
    点击 "Save and Deploy" 开始部署过程。
 
 部署完成后，Cloudflare 会为您提供一个 `.pages.dev` 的临时 URL 来访问您的应用程序。您也可以配置自定义域名。
+
+#### 设置Supabase后端服务
+
+为了启用登录和数据同步功能，您需要设置Supabase后端服务：
+
+1. **创建Supabase账户**：
+   访问 [Supabase官网](https://supabase.com/) 并创建一个免费账户。
+
+2. **创建新项目**：
+   - 点击 "New Project"
+   - 输入项目名称
+   - 选择区域
+   - 设置数据库密码
+   - 点击 "Create new project"
+
+3. **获取API密钥**：
+   - 项目创建完成后，进入项目控制台
+   - 在左侧菜单选择 "Project Settings" > "API"
+   - 复制 "Project URL" 和 "anon public" 密钥
+
+4. **配置环境变量**：
+   - 在Cloudflare Pages项目设置中，进入 "Settings" > "Environment variables"
+   - 添加以下两个环境变量：
+     - `VITE_SUPABASE_URL`: 你的Supabase项目URL
+     - `VITE_SUPABASE_ANON_KEY`: 你的Supabase anon public密钥
+
+5. **创建数据库表**：
+   - 在Supabase项目控制台中，进入 "SQL Editor"
+   - 运行以下SQL脚本创建用户数据表：
+     ```sql
+     -- 创建用户数据表
+     CREATE TABLE IF NOT EXISTS user_data (
+       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+       user_id UUID NOT NULL UNIQUE,
+       time_entries JSONB DEFAULT '[]',
+       schedules JSONB DEFAULT '[]',
+       custom_shifts JSONB DEFAULT '[]',
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+       updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+     );
+     
+     -- 启用user_data表的行级安全
+     ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
+     
+     -- 创建行级安全策略
+     CREATE POLICY "用户只能访问自己的数据" ON user_data
+       FOR ALL USING (auth.uid() = user_id);
+     
+     -- 授权访问权限
+     GRANT ALL ON TABLE user_data TO authenticated;
+     ```
+
+6. **启用身份验证**：
+   - 在左侧菜单选择 "Authentication" > "Providers"
+   - 启用 "Email" 提供商
+   - 根据需要配置其他设置
 
 ## 项目结构
 

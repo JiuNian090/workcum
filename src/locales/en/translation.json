@@ -74,6 +74,9 @@
   },
   "project": {
     "title": "Project Introduction",
+    "user_account": "User Account",
+    "login_description": "Sign in or register an account to sync your data to the cloud and enable data sharing across multiple devices.",
+    "login_prompt": "Click the avatar icon in the top left corner to sign in or register",
     "introduction": {
       "part1": "This is an efficient tool designed specifically for work time management, aimed at helping users easily track and manage work hours. The project was initially created for my wife, Sisi, as a convenient tool for calculating work hours, and has now developed into a complete time tracking system.",
       "part2": "If you have better suggestions or feedback, you can click to contact Lele."
@@ -237,6 +240,13 @@
     "import_success": "Data imported successfully!",
     "import_error": "Error importing data. Please check the file format.",
     "management": "Data Management",
+    "upload": "Upload",
+    "sync": "Sync",
+    "upload_success": "Data uploaded successfully!",
+    "upload_error": "Failed to upload data: ",
+    "sync_success": "Data synced successfully!",
+    "sync_error": "Failed to sync data: ",
+    "sync_confirm": "Are you sure you want to sync data from the cloud? This will overwrite your current local data.",
     "export": {
       "title": "Export Data",
       "description": "Export all data to a JSON file for backup",
