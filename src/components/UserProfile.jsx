@@ -290,19 +290,6 @@ const UserProfile = () => {
             <AccountCircle sx={{ fontSize: 32 }} />
           )}
         </Fab>
-        {user && (
-          <span style={{ 
-            fontSize: '14px', 
-            fontWeight: 500, 
-            color: '#333',
-            maxWidth: '120px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
-          }}>
-            {user.user_metadata?.full_name || '用户'}
-          </span>
-        )}
       </div>
 
       <Menu
