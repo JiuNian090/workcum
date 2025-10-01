@@ -117,6 +117,7 @@ npm run build
    - 添加以下两个环境变量：
      - `VITE_SUPABASE_URL`: 你的Supabase项目URL
      - `VITE_SUPABASE_ANON_KEY`: 你的Supabase anon public密钥
+   - 注意：这些变量会暴露给前端，因此只能使用匿名密钥，不能使用服务角色密钥
 
 5. **创建数据库表**：
    - 在Supabase项目控制台中，进入 "SQL Editor"

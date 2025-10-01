@@ -100,12 +100,36 @@ PWA要求网站必须通过HTTPS提供服务。在开发环境中可以使用HTT
 
 ## 环境变量配置
 
-项目使用环境变量来管理配置。在生产环境中，需要设置以下环境变量：
+项目使用环境变量来管理Supabase配置。在生产环境中，需要设置以下环境变量：
 
+### Supabase配置
 ```bash
-# 如果有API依赖，设置API地址
-REACT_APP_API_URL=https://your-api-domain.com
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
+
+### Cloudflare Pages环境变量配置
+
+在Cloudflare Pages中配置环境变量的步骤：
+
+1. 登录到Cloudflare仪表板
+2. 导航到Pages部分并选择您的项目
+3. 点击"设置"选项卡
+4. 在"环境变量"部分，添加以下变量：
+   - `VITE_SUPABASE_URL`: 您的Supabase项目URL
+   - `VITE_SUPABASE_ANON_KEY`: 您的Supabase匿名密钥
+
+注意：
+- 这些变量会暴露给前端，因此只能使用匿名密钥，不能使用服务角色密钥
+- 变量名必须以`VITE_`前缀开头，这样Vite才能在构建时正确处理它们
+
+### 获取Supabase配置
+
+1. 登录到您的Supabase账户
+2. 选择您的项目
+3. 在左侧菜单中点击"设置" -> "API"
+4. 复制"项目URL"和"anon"密钥
+5. 将这些值添加到您的环境变量配置中
 
 ## 故障排除
 
