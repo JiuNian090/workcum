@@ -106,7 +106,18 @@ PWA要求网站必须通过HTTPS提供服务。在开发环境中可以使用HTT
 ```bash
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_SITE_URL=https://your-deployment-url.com
 ```
+
+### 配置Supabase重定向URL
+
+为了让邮件确认链接正确工作，您需要在Supabase控制台中配置重定向URL：
+
+1. 登录到您的Supabase账户
+2. 选择您的项目
+3. 在左侧菜单中点击"Authentication" -> "URL Configuration"
+4. 将"Site URL"设置为您的部署URL（例如：https://ysywork.776645.xyz/）
+5. 在"Additional Redirect URLs"中添加相同的URL
 
 ### Cloudflare Pages环境变量配置
 
