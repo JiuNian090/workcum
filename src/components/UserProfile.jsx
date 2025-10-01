@@ -257,38 +257,53 @@ const UserProfile = () => {
 
   return (
     <>
-      <Fab 
-        color="primary" 
-        aria-label="user profile"
-        onClick={handleClick}
-        size="small"
-        sx={{ 
-          width: 44, 
-          height: 44,
-          minHeight: 44,
-          backgroundColor: '#f0f0f0',
-          color: '#333',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e5e5e5',
-          '&:hover': {
-            backgroundColor: '#e5e5e5',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          }
-        }}
-      >
-        {user ? (
-          getAvatarSrc() ? (
-            <Avatar 
-              src={getAvatarSrc()} 
-              sx={{ width: 42, height: 42 }}
-            />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Fab 
+          color="primary" 
+          aria-label="user profile"
+          onClick={handleClick}
+          size="small"
+          sx={{ 
+            width: 44, 
+            height: 44,
+            minHeight: 44,
+            backgroundColor: '#f0f0f0',
+            color: '#333',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+            border: '1px solid #e5e5e5',
+            '&:hover': {
+              backgroundColor: '#e5e5e5',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }
+          }}
+        >
+          {user ? (
+            getAvatarSrc() ? (
+              <Avatar 
+                src={getAvatarSrc()} 
+                sx={{ width: 42, height: 42 }}
+              />
+            ) : (
+              <AccountCircle sx={{ fontSize: 32 }} />
+            )
           ) : (
             <AccountCircle sx={{ fontSize: 32 }} />
-          )
-        ) : (
-          <AccountCircle sx={{ fontSize: 32 }} />
+          )}
+        </Fab>
+        {user && (
+          <span style={{ 
+            fontSize: '14px', 
+            fontWeight: 500, 
+            color: '#333',
+            maxWidth: '120px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>
+            {user.user_metadata?.full_name || '用户'}
+          </span>
         )}
-      </Fab>
+      </div>
 
       <Menu
         anchorEl={anchorEl}
