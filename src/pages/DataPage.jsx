@@ -170,43 +170,42 @@ const DataPage = () => {
 
   // Sync data from Supabase to local storage
   const handleSync = async () => {
-    if (!user) return;
-    
-    // Confirm with user before overriding local data
-    if (!window.confirm(t('data.sync_confirm'))) {
+    if (!user) {
+      alert('请先登录');
       return;
     }
     
+    setSyncStatus('正在同步数据...');
+    
     try {
-      // Fetch data from Supabase
+      // 从云端获取数据
       const result = await fetchDataFromSupabase(user.id);
-      
       if (result.success) {
-        const { timeEntries, schedules, customShifts } = result.data;
-        
-        // Save to localStorage
-        if (timeEntries) {
-          localStorage.setItem('timeEntries', JSON.stringify(timeEntries));
+        if (result.data.time_entries) {
+          localStorage.setItem('timeEntries', JSON.stringify(result.data.time_entries));
         }
-        if (schedules) {
-          localStorage.setItem('schedules', JSON.stringify(schedules));
+        if (result.data.schedules) {
+          localStorage.setItem('schedules', JSON.stringify(result.data.schedules));
         }
-        if (customShifts) {
-          localStorage.setItem('customShifts', JSON.stringify(customShifts));
+        if (result.data.custom_shifts) {
+          localStorage.setItem('customShifts', JSON.stringify(result.data.custom_shifts));
         }
-        
-        setSyncStatus(t('data.sync_success'));
-        setTimeout(() => setSyncStatus(''), 3000);
-        
-        // Reload the page to reflect changes
-        window.location.reload();
+        // 触发storage事件以通知其他组件更新
+        window.dispatchEvent(new Event('storage'));
+        setSyncStatus('数据同步成功！');
+        // 2秒后清除状态消息
+        setTimeout(() => setSyncStatus(''), 2000);
       } else {
-        setSyncStatus(t('data.sync_error') + result.error.message);
-        setTimeout(() => setSyncStatus(''), 3000);
+        setSyncStatus('数据同步失败：' + result.error.message);
       }
+      
+      // 重新获取用户信息以更新用户资料
+      const { data: { user: updatedUser } } = await supabase.auth.getUser();
+      // 触发自定义事件通知用户信息更新
+      window.dispatchEvent(new CustomEvent('userProfileUpdated', { detail: updatedUser }));
     } catch (error) {
-      setSyncStatus(t('data.sync_error') + error.message);
-      setTimeout(() => setSyncStatus(''), 3000);
+      console.error('数据同步失败:', error);
+      setSyncStatus('数据同步失败，请重试');
     }
   };
 

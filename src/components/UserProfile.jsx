@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Fab, Menu, MenuItem, Avatar, Divider, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Typography, Box } from '@mui/material';
 import { AccountCircle, Sync, Person, ExitToApp, CloudUpload } from '@mui/icons-material';
@@ -22,6 +22,22 @@ const UserProfile = () => {
   const [passwordStrength, setPasswordStrength] = useState(0); // 密码强度状态
   const [passwordFeedback, setPasswordFeedback] = useState([]); // 密码反馈信息
   const fileInputRef = useRef(null);
+
+  // 监听用户信息更新事件
+  useEffect(() => {
+    const handleUserUpdate = (event) => {
+      if (event.detail) {
+        // 更新用户名状态
+        setUsername(event.detail.user_metadata?.full_name || '');
+      }
+    };
+
+    window.addEventListener('userProfileUpdated', handleUserUpdate);
+    
+    return () => {
+      window.removeEventListener('userProfileUpdated', handleUserUpdate);
+    };
+  }, []);
 
   // 检查密码强度的函数
   const checkPasswordStrength = (password) => {
@@ -238,6 +254,20 @@ const UserProfile = () => {
   
       if (error) {
         throw error;
+      }
+  
+      // 同时更新profiles表
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          username: username,
+          avatar_url: avatarPreview || user?.user_metadata?.avatar_url || null,
+          updated_at: new Date()
+        });
+  
+      if (profileError) {
+        throw profileError;
       }
   
       // 更新成功提示
