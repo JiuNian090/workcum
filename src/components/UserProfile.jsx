@@ -182,6 +182,11 @@ const UserProfile = () => {
   const handleLogoutClick = async () => {
     handleClose();
     await signOut();
+    
+    // 额外确保清除本地存储的用户相关数据
+    localStorage.removeItem('timeEntries');
+    localStorage.removeItem('schedules');
+    localStorage.removeItem('customShifts');
   };
 
   const handleLoginSubmit = async (e) => {

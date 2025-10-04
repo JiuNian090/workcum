@@ -48,6 +48,12 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
+    
+    // 清除本地存储的用户相关数据
+    localStorage.removeItem('timeEntries')
+    localStorage.removeItem('schedules')
+    localStorage.removeItem('customShifts')
+    
     return { error }
   }
 
