@@ -208,7 +208,8 @@ src/
 如果这个项目对您有帮助，欢迎赞赏支持作者，这将鼓励我继续改进和更新这个工具。
 
 <p align="center">
-  <img src="public/reword.png" alt="赞赏码" width="200">
+  <img src="public/reward.png" alt="赞赏码" width="200">
+  <img src="public/小程序.jpg" alt="小程序" width="200">
 </p>
 
 感谢您的支持！
