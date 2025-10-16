@@ -108,59 +108,28 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     }
   }, []);
 
-  // Load time slots from localStorage
+  // 设置默认时间段
   useEffect(() => {
-    const savedTimeSlots = JSON.parse(localStorage.getItem('timeSlots') || '[]');
-    if (savedTimeSlots.length > 0) {
-      // 检查localStorage中的数据是否需要更新
-        const shouldResetTimeSlots = savedTimeSlots && savedTimeSlots.some(slot => !slot.groupName || slot.groupName.startsWith('组'));
-        
-        if (!savedTimeSlots || shouldResetTimeSlots) {
-          // 默认时间段配置：一天三组，每组四个时间段
-          const defaultTimeSlots = [
-            // 上午时段 (groupId: 1)
-            { id: 1, start: '08:00', end: '09:00', group: 1, groupName: '上午' },
-            { id: 2, start: '09:00', end: '10:00', group: 1, groupName: '上午' },
-            { id: 3, start: '10:00', end: '11:00', group: 1, groupName: '上午' },
-            { id: 4, start: '11:00', end: '12:00', group: 1, groupName: '上午' },
-            // 下午时段 (groupId: 2)
-            { id: 5, start: '13:00', end: '14:00', group: 2, groupName: '下午' },
-            { id: 6, start: '14:00', end: '15:00', group: 2, groupName: '下午' },
-            { id: 7, start: '15:00', end: '16:00', group: 2, groupName: '下午' },
-            { id: 8, start: '16:00', end: '17:00', group: 2, groupName: '下午' },
-            // 晚上时段 (groupId: 3)
-            { id: 9, start: '18:00', end: '19:00', group: 3, groupName: '晚上' },
-            { id: 10, start: '19:00', end: '20:00', group: 3, groupName: '晚上' },
-            { id: 11, start: '20:00', end: '21:00', group: 3, groupName: '晚上' },
-            { id: 12, start: '21:00', end: '22:00', group: 3, groupName: '晚上' },
-          ];
-          setTimeSlots(defaultTimeSlots);
-          localStorage.setItem('timeSlots', JSON.stringify(defaultTimeSlots));
-        } else {
-          setTimeSlots(savedTimeSlots);
-        }
-    } else {
-      // 如果没有任何时间段，使用默认配置
-      const defaultTimeSlots = [
-        // 上午时段 (groupId: 1)
-        { id: 1, start: '08:00', end: '09:00', group: 1, groupName: '上午' },
-        { id: 2, start: '09:00', end: '10:00', group: 1, groupName: '上午' },
-        { id: 3, start: '10:00', end: '11:00', group: 1, groupName: '上午' },
-        { id: 4, start: '11:00', end: '12:00', group: 1, groupName: '上午' },
-        // 下午时段 (groupId: 2)
-        { id: 5, start: '13:00', end: '14:00', group: 2, groupName: '下午' },
-        { id: 6, start: '14:00', end: '15:00', group: 2, groupName: '下午' },
-        { id: 7, start: '15:00', end: '16:00', group: 2, groupName: '下午' },
-        { id: 8, start: '16:00', end: '17:00', group: 2, groupName: '下午' },
-        // 晚上时段 (groupId: 3)
-        { id: 9, start: '18:00', end: '19:00', group: 3, groupName: '晚上' },
-        { id: 10, start: '19:00', end: '20:00', group: 3, groupName: '晚上' },
-        { id: 11, start: '20:00', end: '21:00', group: 3, groupName: '晚上' },
-        { id: 12, start: '21:00', end: '22:00', group: 3, groupName: '晚上' },
-      ];
-      setTimeSlots(defaultTimeSlots);
-      localStorage.setItem('timeSlots', JSON.stringify(defaultTimeSlots));
-    }
+    // 清除旧的时间段数据，确保使用新的设置
+    localStorage.removeItem('timeSlots');
+    
+    const defaultTimeSlots = [
+      // 上午时段 (groupId: 1)
+      { id: 1, start: '08:00', end: '09:00', group: 1, groupName: '上午' },
+      { id: 2, start: '09:00', end: '10:00', group: 1, groupName: '上午' },
+      { id: 3, start: '10:00', end: '11:00', group: 1, groupName: '上午' },
+      { id: 4, start: '11:00', end: '12:00', group: 1, groupName: '上午' },
+      // 下午时段 (groupId: 2)
+      { id: 5, start: '13:00', end: '14:00', group: 2, groupName: '下午' },
+      { id: 6, start: '14:00', end: '15:00', group: 2, groupName: '下午' },
+      { id: 7, start: '15:00', end: '16:00', group: 2, groupName: '下午' },
+      { id: 8, start: '16:00', end: '17:00', group: 2, groupName: '下午' },
+      // 晚上时段 (groupId: 3) - 只保留晚上7点到9点
+      { id: 9, start: '19:00', end: '20:00', group: 3, groupName: '晚上' },
+      { id: 10, start: '20:00', end: '21:00', group: 3, groupName: '晚上' },
+    ];
+    setTimeSlots(defaultTimeSlots);
+    localStorage.setItem('timeSlots', JSON.stringify(defaultTimeSlots));
   }, []);
 
   // Save time slots to localStorage whenever they change
@@ -198,34 +167,42 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
 
   const weekDays = getWeekDays(currentDate);
 
-  const handleDateClick = (date) => {
-    // 检查该日期是否已有排班或时间记录
-    const existingSchedules = getScheduleForDate(date);
-    const existingTimeEntries = getTimeEntriesForDate(date);
+  const handleTimeSlotCellClick = (date, timeSlot) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    // 检查该时间段是否已有排班
+    const existingSchedule = getScheduleForTimeSlot(date, timeSlot);
     
-    if (existingSchedules.length > 0 || existingTimeEntries.length > 0) {
-      // 如果已有排班或时间记录，提示用户是否替换
-      setShowReplaceModal(true);
-      setSelectedDateForReplace(date);
+    if (existingSchedule.length > 0) {
+      // 如果已有排班，打开编辑模式
+      handleEdit(existingSchedule[0]);
       return;
     }
     
     setSelectedDate(date);
     setFormData({
       id: null,
-      date: format(date, 'yyyy-MM-dd'),
-      selectedShift: ''
+      date: dateStr,
+      selectedShift: '',
+      startTime: timeSlot.start,
+      endTime: timeSlot.end
     });
     setShowModal(true);
+  };
+  
+  const handleDateClick = (date) => {
+    // 保留原函数以保持兼容性，但可以在这里添加提示
+    console.log('点击了日期:', date);
   };
 
   const handleEdit = (schedule) => {
     setSelectedDate(new Date(schedule.date));
-    // 只设置formData中存在的字段
+    // 设置formData，包括开始和结束时间
     setFormData({
       id: schedule.id,
       date: schedule.date,
-      selectedShift: schedule.selectedShift
+      selectedShift: schedule.selectedShift,
+      startTime: schedule.startTime,
+      endTime: schedule.endTime
     });
     setShowModal(true);
   };
@@ -314,8 +291,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       selectedShift: formData.selectedShift,
       // 为了与现有代码兼容，仍然保存班次的名称、开始和结束时间
       title: selectedShiftData.name,
-      startTime: selectedShiftData.startTime,
-      endTime: selectedShiftData.endTime,
+      startTime: formData.startTime || selectedShiftData.startTime,
+      endTime: formData.endTime || selectedShiftData.endTime,
       notes: selectedShiftData.name,
       // 保存自定义工时信息
       customDuration: selectedShiftData.customDuration || null
@@ -428,9 +405,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                       onClick={() => handleTimeSlotClick(timeSlot)}
                     >
                       <div className="text-[0.6rem] text-center w-full">
+                        <div className="text-gray-500 font-bold">{timeSlot.id}</div>
                         <div className="text-gray-700 font-medium">{timeSlot.start}</div>
                         <div className="text-gray-400">{timeSlot.end}</div>
-                      </div>
+                    </div>
                     </div>
                     
                     {/* Day cells for each time slot row */}
@@ -447,7 +425,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         <div 
                           key={`${day}-${timeSlot.id}`}
                           className={`bg-white p-1 hover:bg-gray-50 transition-colors flex items-center justify-center border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''} ${isSelected ? 'ring-2 ring-blue-500 z-10' : ''}`}
-                          onClick={() => handleDateClick(day)}
+                          onClick={() => handleTimeSlotCellClick(day, timeSlot)}
                           onTouchStart={(e) => handleTouchStart(e, cellData)}
                           onTouchMove={(e) => handleTouchMove(e, cellData)}
                           onTouchEnd={handleTouchEnd}

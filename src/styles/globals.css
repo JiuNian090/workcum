@@ -191,7 +191,7 @@ body {
 
 /* Heading styles - Modernized */
 .page-heading {
-  @apply text-4xl font-bold text-secondary-900 mb-8 animate-fade-in;
+  @apply text-4xl font-bold text-secondary-900 mb-2 animate-fade-in;
 }
 
 .section-heading {
