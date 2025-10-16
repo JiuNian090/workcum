@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { getShiftColor, getShiftBackgroundColor, getShiftTypeBackgroundColor } from '@/utils/shiftColor.js'; // 导入颜色工具函数
 import { getEntryColor } from '@/utils/entryColor.js'; // 导入时间记录颜色工具函数
 import Modal from '../modals/Modal.jsx'; // 导入统一的Modal组件
+import TimeSlotConfigModal from './TimeSlotConfigModal.jsx'; // 导入时间段配置模态框组件
 
 const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const { t } = useTranslation();
@@ -380,111 +381,143 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         </div>
         
         {/* Time slots and calendar cells */}
-        {timeSlots.map((timeSlot) => (
-          <div key={timeSlot.id} className="grid grid-cols-8 border-b border-gray-200 last:border-b-0">
-            {/* Time slot column */}
-            <div 
-              className="bg-white border-r border-gray-200 p-1 hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-center"
-              onClick={() => handleTimeSlotClick(timeSlot)}
-            >
-              <div className="text-[0.6rem] text-center w-full">
-                <div className="text-gray-700 font-medium">{timeSlot.start}</div>
-                <div className="text-gray-400">{timeSlot.end}</div>
-              </div>
-            </div>
-            
-            {/* Day cells for each time slot row */}
-            {weekDays.map((day) => {
-              const isToday = isSameDay(day, new Date());
-              const slotSchedules = getScheduleForTimeSlot(day, timeSlot);
-              const slotTimeEntries = getTimeEntriesForTimeSlot(day, timeSlot);
-              
-              return (
-                <div 
-                  key={`${day}-${timeSlot.id}`}
-                  className={`bg-white border-r border-gray-200 last:border-r-0 p-1 hover:bg-gray-50 transition-colors flex items-center justify-center ${isToday ? 'bg-blue-50' : ''}`}
-                  onClick={() => handleDateClick(day)}
-                >
-                  {slotSchedules.length > 0 && slotSchedules.map((schedule) => {
-                    // 获取班次信息
-                    const shiftInfo = shifts.find(shift => shift.id === schedule.selectedShift);
-                    const shiftName = shiftInfo ? shiftInfo.name : schedule.title;
-                    // 获取班次类型和自定义色调
-                    const shiftType = shiftInfo ? shiftInfo.shiftType : 'day';
-                    const customHue = shiftInfo ? shiftInfo.customHue : undefined;
+        {/* 按组渲染时间槽并在组之间添加分隔线 */}
+        {(() => {
+          const groups = getTimeSlotsByGroup();
+          const groupKeys = Object.keys(groups).sort((a, b) => a - b);
+          
+          return groupKeys.map((groupId, groupIndex) => {
+            const groupSlots = groups[groupId];
+            return (
+              <React.Fragment key={groupId}>
+                {groupSlots.map((timeSlot, slotIndex) => (
+                  <div key={timeSlot.id} className="grid grid-cols-8">
+                    {/* Time slot column */}
+                    <div 
+                      className="bg-white border-r border-gray-200 p-1 hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-center"
+                      onClick={() => handleTimeSlotClick(timeSlot)}
+                    >
+                      <div className="text-[0.6rem] text-center w-full">
+                        <div className="text-gray-700 font-medium">{timeSlot.start}</div>
+                        <div className="text-gray-400">{timeSlot.end}</div>
+                      </div>
+                    </div>
                     
-                    return (
-                      <div 
-                        key={schedule.id} 
-                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-1 text-[0.55rem] h-full w-full flex flex-col justify-center"
-                        style={{ 
-                          borderLeft: `2px solid ${getShiftColor(shiftType, customHue)}`,
-                          backgroundColor: getShiftBackgroundColor(shiftType, customHue),
-                          boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.05)'
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(schedule);
-                        }}
-                      >
-                        <h3 
-                          className="font-bold leading-tight truncate"
-                          style={{ color: getShiftColor(shiftType, customHue) }}
+                    {/* Day cells for each time slot row */}
+                    {weekDays.map((day, index) => {
+                      const isToday = isSameDay(day, new Date());
+                      const slotSchedules = getScheduleForTimeSlot(day, timeSlot);
+                      const slotTimeEntries = getTimeEntriesForTimeSlot(day, timeSlot);
+                      
+                      return (
+                        <div 
+                          key={`${day}-${timeSlot.id}`}
+                          className={`bg-white p-1 hover:bg-gray-50 transition-colors flex items-center justify-center border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
+                          onClick={() => handleDateClick(day)}
                         >
-                          {shiftName}
-                        </h3>
-                        <div className="flex justify-between items-center mt-0.5">
-                          <span className="text-gray-600">
-                            {formatTime(schedule.startTime)}
-                          </span>
-                          {shiftInfo?.customDuration && (
-                            <span className="bg-white bg-opacity-70 px-1 py-0.5 rounded font-bold">
-                              [{convertDurationToHours(shiftInfo.customDuration).toFixed(1)}h]
-                            </span>
+                          {slotSchedules.length > 0 && slotSchedules.map((schedule) => {
+                            // 获取班次信息
+                            const shiftInfo = shifts.find(shift => shift.id === schedule.selectedShift);
+                            const shiftName = shiftInfo ? shiftInfo.name : schedule.title;
+                            // 获取班次类型和自定义色调
+                            const shiftType = shiftInfo ? shiftInfo.shiftType : 'day';
+                            const customHue = shiftInfo ? shiftInfo.customHue : undefined;
+                            
+                            return (
+                              <div 
+                                key={schedule.id} 
+                                className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-1 text-[0.55rem] h-full w-full flex flex-col justify-center"
+                                style={{ 
+                                  borderLeft: `2px solid ${getShiftColor(shiftType, customHue)}`,
+                                  backgroundColor: getShiftBackgroundColor(shiftType, customHue),
+                                  boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.05)'
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(schedule);
+                                }}
+                              >
+                                <h3 
+                                  className="font-bold leading-tight truncate"
+                                  style={{ color: getShiftColor(shiftType, customHue) }}
+                                >
+                                  {shiftName}
+                                </h3>
+                                <div className="flex justify-between items-center mt-0.5">
+                                  <span className="text-gray-600">
+                                    {formatTime(schedule.startTime)}
+                                  </span>
+                                  {shiftInfo?.customDuration && (
+                                    <span className="bg-white bg-opacity-70 px-1 py-0.5 rounded font-bold">
+                                      [{convertDurationToHours(shiftInfo.customDuration).toFixed(1)}h]
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                          
+                          {slotTimeEntries.length > 0 && slotTimeEntries.map((entry) => {
+                            const entryColor = getEntryColor(entry.customHue);
+                            return (
+                              <div 
+                                key={entry.id} 
+                                className="text-[0.55rem] font-semibold p-1 rounded truncate cursor-pointer hover:scale-[1.01] transition-all duration-200 shadow-sm h-full flex flex-col justify-center"
+                                style={{
+                                  backgroundColor: entryColor.backgroundColor,
+                                  border: `1px solid ${entryColor.borderColor}`
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedEntry(entry);
+                                  setShowDeleteModal(true);
+                                }}
+                              >
+                                <div 
+                                  className="font-bold truncate"
+                                  style={{
+                                    color: entryColor.textColor
+                                  }}
+                                >
+                                  {entry.notes || t('time_entry.entry')}
+                                </div>
+                              </div>
+                            );
+                          })}
+                          
+                          {/* Empty slot indicator */}
+                          {slotSchedules.length === 0 && slotTimeEntries.length === 0 && (
+                            <div className="text-[0.4rem] text-gray-300 text-center py-0.5">
+                            </div>
                           )}
                         </div>
-                      </div>
-                    );
-                  })}
-                  
-                  {slotTimeEntries.length > 0 && slotTimeEntries.map((entry) => {
-                    const entryColor = getEntryColor(entry.customHue);
-                    return (
-                      <div 
-                        key={entry.id} 
-                        className="text-[0.55rem] font-semibold p-1 rounded truncate cursor-pointer hover:scale-[1.01] transition-all duration-200 shadow-sm h-full flex flex-col justify-center"
-                        style={{
-                          backgroundColor: entryColor.backgroundColor,
-                          border: `1px solid ${entryColor.borderColor}`
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedEntry(entry);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        <div 
-                          className="font-bold truncate"
-                          style={{
-                            color: entryColor.textColor
-                          }}
-                        >
-                          {entry.notes || t('time_entry.entry')}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  
-                  {/* Empty slot indicator */}
-                  {slotSchedules.length === 0 && slotTimeEntries.length === 0 && (
-                    <div className="text-[0.4rem] text-gray-300 text-center py-0.5">
+                      );
+                    })}
+                  </div>
+                ))}
+                {/* 在组之间添加分隔线（除了最后一组） */}
+                {groupIndex < groupKeys.length - 1 && (
+                  <div className="grid grid-cols-8">
+                    {/* 时间槽列的分隔线 */}
+                    <div className="bg-white border-r border-gray-200 p-1 flex items-center justify-center">
+                      <div className="w-full h-px bg-gray-300"></div>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+                    
+                    {/* 日期列的分隔线 */}
+                    {weekDays.map((day, index) => (
+                      <div 
+                        key={`divider-${groupId}-${day}`}
+                        className={`bg-white p-1 flex items-center justify-center border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''}`}
+                      >
+                        <div className="w-full h-px bg-gray-300"></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          });
+        })()}
       </div>
 
       {showModal && (
@@ -677,6 +710,27 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 {t('schedule.replace')}
               </button>
             </div>
+          </Modal>
+        )}
+        
+        {showTimeSlotConfig && selectedTimeSlot && (
+          <Modal
+            isOpen={showTimeSlotConfig}
+            onClose={() => {
+              setShowTimeSlotConfig(false);
+              setSelectedTimeSlot(null);
+            }}
+            title={t('time_slot_config.title') || '配置时间段'}
+            size="md"
+          >
+            <TimeSlotConfigModal
+              timeSlot={selectedTimeSlot}
+              onSave={handleTimeSlotConfigSave}
+              onCancel={() => {
+                setShowTimeSlotConfig(false);
+                setSelectedTimeSlot(null);
+              }}
+            />
           </Modal>
         )}
     </div>
