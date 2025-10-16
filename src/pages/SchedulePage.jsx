@@ -29,12 +29,12 @@ const SchedulePage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto w-full px-1 sm:px-2">
+    <div className="max-w-6xl mx-auto w-full px-1 sm:px-2 h-full flex flex-col">
       <div className="flex justify-between items-center mb-4 sm:mb-6">
         <h1 className="page-heading">{t('schedule.title')}</h1>
       </div>
       
-      <div className="p-0.5 sm:p-1 md:p-2 mt-1 mb-0.5">
+      <div className="p-0.5 sm:p-1 md:p-2 mt-1 mb-0.5 flex-grow flex flex-col">
         <div className="flex justify-between items-center mb-2 sm:mb-3">
           <button
             onClick={goToPreviousWeek}
@@ -57,10 +57,12 @@ const SchedulePage = () => {
           </button>
         </div>
         
-        <WeeklyScheduleCalendar 
-          currentDate={currentWeek}
-          onDateChange={setCurrentWeek}
-        />
+        <div className="flex-grow">
+          <WeeklyScheduleCalendar 
+            currentDate={currentWeek}
+            onDateChange={setCurrentWeek}
+          />
+        </div>
       </div>
     </div>
   );
