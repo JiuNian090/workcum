@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   format, 
   startOfWeek, 
@@ -14,6 +14,7 @@ import { getShiftColor, getShiftBackgroundColor, getShiftTypeBackgroundColor } f
 import { getEntryColor } from '@/utils/entryColor.js'; // 导入时间记录颜色工具函数
 import Modal from '../modals/Modal.jsx'; // 导入统一的Modal组件
 import TimeSlotConfigModal from './TimeSlotConfigModal.jsx'; // 导入时间段配置模态框组件
+import { useSwipeSelection } from '@/hooks/useSwipeSelection'; // 导入滑动选择hook
 
 const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const { t } = useTranslation();
@@ -34,6 +35,25 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const [timeSlots, setTimeSlots] = useState([]); // 时间段配置
   const [showTimeSlotConfig, setShowTimeSlotConfig] = useState(false); // 时间段配置模态框
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // 当前选中的时间段
+  
+  // 处理合并选择的单元格
+  const handleMergeSelection = useCallback((cells) => {
+    // 如果选择了多个单元格，执行合并操作
+    if (cells.length > 1) {
+      console.log('合并选中的单元格:', cells);
+      // 这里实现实际的合并逻辑
+      // 例如：创建一个新的班次覆盖所有选中的时间段
+    }
+  }, []);
+  
+  // 使用滑动选择hook
+  const { 
+    isSelecting, 
+    selectedCells, 
+    handleTouchStart, 
+    handleTouchMove, 
+    handleTouchEnd 
+  } = useSwipeSelection(handleMergeSelection);
 
   // Load schedules from localStorage
   useEffect(() => {
@@ -332,7 +352,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         return t('time_entry.custom_shift.day_shift');
     }
   };
-
+  
   const getScheduleForDate = (date) => {
     return schedules.filter(schedule => 
       isSameDay(new Date(schedule.date), date)
@@ -408,12 +428,19 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                       const isToday = isSameDay(day, new Date());
                       const slotSchedules = getScheduleForTimeSlot(day, timeSlot);
                       const slotTimeEntries = getTimeEntriesForTimeSlot(day, timeSlot);
+                      const cellData = { date: format(day, 'yyyy-MM-dd'), timeSlotId: timeSlot.id };
+                      const isSelected = selectedCells.some(
+                        cell => cell.date === cellData.date && cell.timeSlotId === cellData.timeSlotId
+                      );
                       
                       return (
                         <div 
                           key={`${day}-${timeSlot.id}`}
-                          className={`bg-white p-1 hover:bg-gray-50 transition-colors flex items-center justify-center border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
+                          className={`bg-white p-1 hover:bg-gray-50 transition-colors flex items-center justify-center border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''} ${isSelected ? 'ring-2 ring-blue-500 z-10' : ''}`}
                           onClick={() => handleDateClick(day)}
+                          onTouchStart={(e) => handleTouchStart(e, cellData)}
+                          onTouchMove={(e) => handleTouchMove(e, cellData)}
+                          onTouchEnd={handleTouchEnd}
                         >
                           {slotSchedules.length > 0 && slotSchedules.map((schedule) => {
                             // 获取班次信息
