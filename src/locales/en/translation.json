@@ -3,10 +3,10 @@
   "navigation": {
     "time_tracking": "Time Tracking",
     "reports": "Statistics",
-    "schedule": "Schedule",
+    "schedule": "Class Schedule",
     "settings": "Settings",
     "data": "My",
-    "time_entry": "Schedule"
+    "time_entry": "Course"
   },
   "common": {
     "add": "Add",
@@ -48,15 +48,15 @@
       "item2": "After installation, you can open it directly from the desktop without opening the browser every time. Or click the web menu and select 'Add to Home Screen'."
     },
     "planning": {
-      "title": "Planning",
-      "item1": "You can select preset custom shift templates to quickly populate record information.",
-      "item2": "Or manually add your work time records. If the schedule indicates a rest day but you actually worked, you can add a record to account for the difference.",
-      "item3": "When adding a differential entry, if there is already a schedule in the calendar, it will replace the schedule to ensure the validity of the differential and working hours."
+      "title": "Course",
+      "item1": "You can select preset custom course templates to quickly populate record information.",
+      "item2": "Or manually add your study time records. If the class schedule indicates a rest day but you actually had a class, you can add a record to account for the difference.",
+      "item3": "When adding a differential entry, if there is already a class schedule in the calendar, it will replace the schedule to ensure the validity of the differential and study hours."
     },
     "scheduling": {
       "title": "Scheduling",
-      "item1": "Use the weekly calendar to add and manage schedules. Click on any date to add a new schedule task. Only one schedule task can be added per date.",
-      "item2": "Use the monthly calendar to view the entire month's schedule."
+      "item1": "Use the weekly calendar to add and manage class schedules. Click on any date to add a new class schedule task. Only one class schedule task can be added per date.",
+      "item2": "Use the monthly calendar to view the entire month's class schedule."
     },
     "statistics": {
       "title": "Statistics",
@@ -80,7 +80,7 @@
     },
     "features": {
       "title": "Main Features",
-      "item1": "Intuitive schedule calendar view",
+      "item1": "Intuitive class schedule calendar view",
       "item2": "Detailed time recording functionality",
       "item3": "Comprehensive data export and import support",
       "item4": "Visual report analysis"
@@ -101,11 +101,11 @@
     "recent_entries": "Recent Entries",
     "no_entries": "No time entries recorded yet",
     "date": "Date",
-    "shift": "Shift",
+    "shift": "Course",
     "custom_shift": {
-      "title": "Custom Shifts",
-      "shift_name": "Shift Name",
-      "shift_name_placeholder": "e.g., Morning Shift, Evening Shift",
+      "title": "Custom Courses",
+      "shift_name": "Course Name",
+      "shift_name_placeholder": "e.g., Math Class, English Class",
       "start_time": "Start Time",
       "end_time": "End Time",
       "custom_duration": "Custom Duration",
@@ -114,29 +114,29 @@
       "hours": "hours",
       "minutes": "minutes",
       "add_shift": "Add Template",
-      "save_shift": "Save Shift",
-      "update_shift": "Update Shift",
+      "save_shift": "Save Course",
+      "update_shift": "Update Course",
       "cancel": "Cancel",
       "edit": "Edit",
       "delete": "Delete",
-      "no_shifts": "No custom shifts available",
-      "no_shifts_description": "Click the button above to add your first custom shift template for quick work time recording.",
-      "select_shift": "Select Shift Template",
-      "select_placeholder": "Select a shift template",
-      "select_shift_help": "Please select a shift template to quickly populate schedule information",
+      "no_shifts": "No custom courses available",
+      "no_shifts_description": "Click the button above to add your first custom course template for quick study time recording.",
+      "select_shift": "Select Course Template",
+      "select_placeholder": "Select a course template",
+      "select_shift_help": "Please select a course template to quickly populate record information",
       "validation": {
-        "name_required": "Please enter a shift name"
+        "name_required": "Please enter a course name"
       },
-      "delete_confirm": "Are you sure you want to delete this shift template?",
+      "delete_confirm": "Are you sure you want to delete this course template?",
       "color_preview": "Color Preview",
-      "color_test": "Shift Color Test",
+      "color_test": "Course Color Test",
       "text_color": "Text Color",
       "background_color": "Background Color",
-      "shift_type": "Shift Type",
-      "day_shift": "Day Shift",
-      "rest_day": "Rest Day",
-      "overnight_shift": "Overnight Shift",
-      "special_shift": "Special Shift",
+      "shift_type": "Course Type",
+      "day_shift": "Regular Course",
+      "rest_day": "Self-study Day",
+      "overnight_shift": "Evening Course",
+      "special_shift": "Special Course",
       "color_picker": "Select Color",
       "selected_color": "Selected Color",
       "colors": {
@@ -171,7 +171,7 @@
     "minutes": "minutes"
   },
   "schedule": {
-    "title": "Schedule",
+    "title": "Class Schedule",
     "week": "Week",
     "month": "Month",
     "previous_week": "Last",
@@ -183,15 +183,15 @@
     "week_suffix": "",
     "week_view": "Week",
     "month_view": "Month",
-    "no_events": "No schedules",
-    "no_schedules": "No schedules for this week",
+    "no_events": "No class schedules",
+    "no_schedules": "No class schedules for this week",
     "add_schedule": "Add",
     "edit_schedule": "Edit",
-    "delete_confirm": "Are you sure you want to delete this schedule?",
-    "unique_schedule_warning": "There is already a schedule for this date. Only one schedule can be added per date.",
-    "switch_to_week_view": "Please switch to week view to add schedule tasks",
+    "delete_confirm": "Are you sure you want to delete this class schedule?",
+    "unique_schedule_warning": "There is already a class schedule for this date. Only one class schedule can be added per date.",
+    "switch_to_week_view": "Please switch to week view to add class schedule tasks",
     "replace_confirmation": "Replace Confirmation",
-    "replace_warning": "There is already a schedule or entry for this date. Continuing will replace the existing content. Are you sure you want to continue?",
+    "replace_warning": "There is already a class schedule or entry for this date. Continuing will replace the existing content. Are you sure you want to continue?",
     "replace": "Replace",
     "form": {
       "title": "Title",
@@ -200,26 +200,26 @@
       "end_time": "End Time",
       "duration": "Duration",
       "notes": "Notes",
-      "shift_template": "Shift Template",
+      "shift_template": "Course Template",
       "type": "Type",
       "time_entry": "Time Entry",
-      "schedule": "Schedule",
+      "schedule": "Class Schedule",
       "name": "Shift Name",
       "custom_hours": "Custom Hours",
       "time_period": "Time Period",
-      "shift_type": "Shift Type"
+      "shift_type": "Course Type"
     },
-    "select_placeholder": "Select a shift template",
-    "select_shift_help": "Please select a shift template to quickly populate schedule information",
+    "select_placeholder": "Select a course template",
+    "select_shift_help": "Please select a course template to quickly populate record information",
     "validation": {
       "title_required": "Please enter a title",
       "end_time_after_start": "End time must be later than start time",
-      "shift_required": "Please select a shift template"
+      "shift_required": "Please select a course template"
     }
   },
   "shifts": {
-    "custom_shifts": "Custom Shifts",
-    "name": "Shift Name",
+      "custom_shifts": "Custom Courses",
+      "name": "Course Name",
     "start_time": "Start Time",
     "end_time": "End Time",
     "custom_duration": "Custom Duration",
@@ -295,7 +295,7 @@
       "notes": "Notes",
       "type": "Type",
       "time_entry": "Time Entry",
-      "schedule": "Schedule",
+      "schedule": "Class Schedule",
       "start_time": "Start Time",
       "end_time": "End Time",
       "name": "Name",
@@ -308,8 +308,8 @@
     "summary_item": "Item",
     "value": "Value",
     "entries_count": "Total Time Entries",
-    "schedules_count": "Total Schedules",
-    "custom_shifts_count": "Total Custom Shifts",
+    "schedules_count": "Total Class Schedules",
+    "custom_shifts_count": "Total Custom Courses",
     "total_hours": "Total Hours",
     "total_minutes": "Total Minutes",
     "total_time_tracked": "Total time tracked from {{startDate}} to {{endDate}}",

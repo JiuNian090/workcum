@@ -1,9 +1,9 @@
 {
   "app_title": "工时记录系统",
   "navigation": {
-    "time_entry": "计划",
+    "time_entry": "课程",
     "reports": "统计",
-    "schedule": "排班",
+    "schedule": "课表",
     "data": "我的"
   },
   "common": {
@@ -46,15 +46,15 @@
       "item2": "安装后即可在桌面打开，无需每次都打开浏览器。或者点击网页菜单，点击添加到桌面。"
     },
     "planning": {
-      "title": "计划",
-      "item1": "可选择预设的自定义班次模板快速填充记录信息，",
-      "item2": "或者手动添加您的工作时间记录，如果排班表是休息，实际上却上了班，可以添加记录来保证差异性。",
-      "item3": "当添加差异记录时，如果日历中有排班了，会将排班替换掉，以保证差异和工时有效性。"
+      "title": "课程",
+      "item1": "可选择预设的自定义课程模板快速填充记录信息，",
+      "item2": "或者手动添加您的学习时间记录，如果课表安排休息，实际上却上了课，可以添加记录来保证差异性。",
+      "item3": "当添加差异记录时，如果日历中有课表安排，会将课表替换掉，以保证差异和学习时间有效性。"
     },
     "scheduling": {
-      "title": "排班",
-      "item1": "使用周历添加和管理排班，点击任意日期添加新的排班任务。每个日期只能添加一个排班任务。",
-      "item2": "使用月历查看整月排班。"
+      "title": "课表",
+      "item1": "使用周历添加和管理课表，点击任意日期添加新课表任务。每个日期只能添加一个课表任务。",
+      "item2": "使用月历查看整月课表。"
     },
     "statistics": {
       "title": "统计",
@@ -78,7 +78,7 @@
     },
     "features": {
       "title": "主要功能",
-      "item1": "直观的排班日历视图",
+      "item1": "直观的课表日历视图",
       "item2": "详细的时间记录功能",
       "item3": "全面的数据导出和导入支持",
       "item4": "可视化报表分析"
@@ -114,12 +114,12 @@
     "validation": {
       "end_time_after_start": "结束时间必须晚于开始时间"
     },
-    "sync_to_schedule": "同步到排班",
-    "sync_success": "时间记录已同步到排班！",
+    "sync_to_schedule": "同步到课表",
+      "sync_success": "时间记录已同步到课表！",
     "custom_shift": {
-      "title": "自定义班次",
-      "shift_name": "班次名称",
-      "shift_name_placeholder": "例如：早班、晚班",
+      "title": "自定义课程",
+      "shift_name": "课程名称",
+        "shift_name_placeholder": "例如：数学课、英语课",
       "start_time": "开始时间",
       "end_time": "结束时间",
       "custom_duration": "自定义工时",
@@ -133,24 +133,24 @@
       "cancel": "取消",
       "edit": "编辑",
       "delete": "删除",
-      "no_shifts": "暂无自定义班次",
-      "no_shifts_description": "点击上方按钮添加您的第一个自定义班次模板，方便快速记录工作时间。",
-      "select_shift": "选择班次模板",
-      "select_placeholder": "请选择一个班次模板",
-      "select_shift_help": "请选择一个班次模板来快速填充排班信息",
+      "no_shifts": "暂无自定义课程",
+      "no_shifts_description": "点击上方按钮添加您的第一个自定义课程模板，方便快速记录学习时间。",
+      "select_shift": "选择课程模板",
+        "select_placeholder": "请选择一个课程模板",
+        "select_shift_help": "请选择一个课程模板来快速填充记录信息",
       "validation": {
-        "name_required": "请输入班次名称"
-      },
-      "delete_confirm": "确定要删除这个班次模板吗？",
+          "name_required": "请输入课程名称"
+        },
+      "delete_confirm": "确定要删除这个课程模板吗？",
       "color_preview": "颜色预览",
-      "color_test": "班次颜色测试",
+      "color_test": "课程颜色测试",
       "text_color": "文字颜色",
       "background_color": "背景颜色",
-      "shift_type": "班次类型",
-      "day_shift": "白天班",
-      "rest_day": "休息日",
-      "overnight_shift": "跨夜班",
-      "special_shift": "特殊班次",
+      "shift_type": "课程类型",
+      "day_shift": "常规课",
+        "rest_day": "自学日",
+        "overnight_shift": "晚课",
+        "special_shift": "特殊课程",
       "color_picker": "选择颜色",
       "selected_color": "已选颜色",
       "colors": {
@@ -190,19 +190,19 @@
       "notes": "班次",
       "type": "类型",
       "time_entry": "工时记录",
-      "schedule": "排班",
-      "name": "班次名称",
+      "schedule": "课表",
+      "name": "课程名称",
       "custom_hours": "自定义工时",
-      "time_period": "班次时间段",
-      "shift_type": "班次类型"
+      "time_period": "课程时间段",
+      "shift_type": "课程类型"
     },
     "worksheet_name": "工作记录",
     "total": "总计",
     "summary_item": "统计项目",
     "value": "数值",
     "entries_count": "工时记录总数",
-    "schedules_count": "排班记录总数",
-    "custom_shifts_count": "自定义班次总数",
+    "schedules_count": "课表记录总数",
+    "custom_shifts_count": "自定义课程总数",
     "total_hours": "总工时(小时)",
     "total_minutes": "总工时(分钟)",
     "export_modal": {
@@ -212,7 +212,7 @@
     "enter_file_name": "请输入文件名"
   },
   "schedule": {
-    "title": "排班",
+    "title": "课表",
 
     "previous_week": "上周",
     "next_week": "下周",
@@ -224,13 +224,13 @@
     "week_prefix": "第",
     "week_suffix": "周",
     "add_task": "+ 添加任务",
-    "edit_schedule": "编辑排班",
-    "add_schedule": "添加排班",
-    "delete_confirm": "确定要删除这个排班吗？",
+    "edit_schedule": "编辑课表",
+    "add_schedule": "添加课表",
+    "delete_confirm": "确定要删除这个课表吗？",
     "validation": {
       "title_required": "请输入任务标题",
       "end_time_after_start": "结束时间必须晚于开始时间",
-      "shift_required": "请选择一个班次模板"
+      "shift_required": "请选择一个课程模板"
     },
     "form": {
       "title": "任务标题",
@@ -244,15 +244,15 @@
       "cancel": "取消",
       "save": "保存"
     },
-    "no_events": "暂无排班",
-    "unique_schedule_warning": "该日期已有排班任务，每个日期只能添加一个排班任务。",
-    "switch_to_week_view": "请切换到周视图添加排班任务",
+    "no_events": "暂无课表",
+    "unique_schedule_warning": "该日期已有课表任务，每个日期只能添加一个课表任务。",
+    "switch_to_week_view": "请切换到周视图添加课表任务",
     "replace_confirmation": "替换确认",
-    "replace_warning": "该日期已有排班或记录，继续操作将替换现有内容。确定要继续吗？",
+    "replace_warning": "该日期已有课表或记录，继续操作将替换现有内容。确定要继续吗？",
     "replace": "替换"
   },
   "shifts": {
-    "custom_shifts": "自定义班次",
+    "custom_shifts": "自定义课程",
     "name": "班次名称",
     "start_time": "开始时间",
     "end_time": "结束时间",
