@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import DurationPicker from '../pickers/DurationPicker';
-import { getShiftColor, getShiftBackgroundColor, getShiftTypeBackgroundColor } from '@/utils/shiftColor.js';
+import { getShiftColor, getShiftBackgroundColor } from '@/utils/shiftColor.js';
 import Modal from '../modals/Modal';
 import ColorPicker from '../pickers/ColorPicker'; // 导入颜色选择器组件
 
@@ -11,11 +10,8 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
   const [shiftName, setShiftName] = useState('');
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('17:00');
-  const [customDuration, setCustomDuration] = useState('');
-  const [shiftType, setShiftType] = useState('day');
-  const [customHue, setCustomHue] = useState(120); // 添加自定义色调状态，默认为绿色
+  const [instructor, setInstructor] = useState(''); // 导师姓名
+  const [customHue, setCustomHue] = useState(180); // 添加自定义色调状态，默认为青色
   
   // Drag and drop sorting related state
   const [draggedItem, setDraggedItem] = useState(null);
@@ -32,19 +28,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     localStorage.setItem('customShifts', JSON.stringify(shifts));
   }, [shifts]);
 
-  // 根据班次类型自动设置默认颜色
-  useEffect(() => {
-    // 定义班次类型到默认颜色的映射
-    const typeToColorMap = {
-      day: 180,      // 青色（与颜色选择器中的青色一致）
-      rest: 280,     // 紫色（与颜色选择器中的紫色一致）
-      overnight: 240, // 蓝色
-      special: 330   // 粉色（与颜色选择器中的粉色一致）
-    };
-    
-    // 设置对应的颜色
-    setCustomHue(typeToColorMap[shiftType] || 180);
-  }, [shiftType]);
+  // 移除班次类型相关的颜色设置逻辑
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -57,10 +41,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     const newShift = {
       id: editingShift ? editingShift.id : Date.now().toString(),
       name: shiftName,
-      startTime,
-      endTime,
-      customDuration: customDuration || null,
-      shiftType,
+      instructor, // 保存导师姓名
       customHue // 保存自定义色调
     };
     
@@ -75,21 +56,15 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     
     // Reset form
     setShiftName('');
-    setStartTime('09:00');
-    setEndTime('17:00');
-    setCustomDuration('');
-    setShiftType('day');
-    setCustomHue(180); // 重置为默认值（青色）
-    setShowForm(false);
+      setInstructor(''); // 重置导师姓名
+      setCustomHue(180); // 重置为默认值（青色）
+      setShowForm(false);
   };
 
   const handleEdit = (shift) => {
     setEditingShift(shift);
     setShiftName(shift.name);
-    setStartTime(shift.startTime);
-    setEndTime(shift.endTime);
-    setCustomDuration(shift.customDuration || '');
-    setShiftType(shift.shiftType || 'day');
+    setInstructor(shift.instructor || ''); // 设置导师姓名，如果不存在则为空
     setCustomHue(shift.customHue !== undefined ? shift.customHue : 180); // 设置自定义色调，如果不存在则默认为青色
     setShowForm(true);
     
@@ -107,35 +82,9 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     }
   };
 
-  // Convert duration string to hours (e.g., "8h30m" -> 8.5)
-  const convertDurationToHours = (durationStr) => {
-    if (!durationStr) return 0;
-    
-    // Match patterns like "8h", "30m", "1h30m"
-    const hoursMatch = durationStr.match(/(\d+)h/);
-    const minutesMatch = durationStr.match(/(\d+)m/);
-    
-    const hours = hoursMatch ? parseInt(hoursMatch[1]) : 0;
-    const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 0;
-    
-    return hours + (minutes / 60);
-  };
+  // 不需要转换时长，已移除自定义工时功能
 
-  // 获取班次类型显示文本
-  const getShiftTypeText = (type) => {
-    switch (type) {
-      case 'day':
-        return t('time_entry.custom_shift.day_shift');
-      case 'rest':
-        return t('time_entry.custom_shift.rest_day');
-      case 'overnight':
-        return t('time_entry.custom_shift.overnight_shift');
-      case 'special':
-        return t('time_entry.custom_shift.special_shift');
-      default:
-        return t('time_entry.custom_shift.day_shift');
-    }
-  };
+  // 移除班次类型显示文本函数
 
   // Drag and drop sorting functions
   const handleDragStart = (e, item) => {
@@ -209,13 +158,10 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
         isOpen={showForm} 
         onClose={() => {
           setShowForm(false);
-          setEditingShift(null);
-          setShiftName('');
-          setStartTime('09:00');
-          setEndTime('17:00');
-          setCustomDuration('');
-          setShiftType('day');
-          setCustomHue(180); // 重置为默认值（青色）
+      setEditingShift(null);
+      setShiftName('');
+      setInstructor(''); // 重置导师姓名
+      setCustomHue(180); // 重置为默认值（青色）
         }}
         size="md"
         title={editingShift ? `${t('time_entry.custom_shift.edit_shift')} - ${editingShift.name}` : t('time_entry.custom_shift.add_shift')}
@@ -234,102 +180,25 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
               placeholder={t('time_entry.custom_shift.shift_name_placeholder')}
               required
             />
-          </div>
+</div>
+        
+        <div className="mb-2 sm:mb-3">
+          <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="instructor">
+            导师
+          </label>
+          <input
+            type="text"
+            id="instructor"
+            value={instructor}
+            onChange={(e) => setInstructor(e.target.value)}
+            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-xs sm:text-sm"
+            placeholder="请输入导师姓名"
+          />
+        </div>
           
-          <div className="grid grid-cols-2 gap-2 mb-2 sm:gap-3 sm:mb-3">
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="shiftStartTime">
-                {t('time_entry.custom_shift.start_time')}
-              </label>
-              <input
-                type="time"
-                id="shiftStartTime"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                required
-                inputMode="none" // 在移动设备上更好地调用原生选择器
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="shiftEndTime">
-                {t('time_entry.custom_shift.end_time')}
-              </label>
-              <input
-                type="time"
-                id="shiftEndTime"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-sm"
-                required
-                inputMode="none" // 在移动设备上更好地调用原生选择器
-              />
-            </div>
-          </div>
+          {/* 移除时间和自定义工时字段 */}
           
-          {/* 自定义工时放在开始时间和结束时间下面 */}
-          <div className="mb-2 sm:mb-3">
-            <DurationPicker
-              id="customDuration"
-              label={t('time_entry.custom_shift.custom_duration')}
-              value={customDuration}
-              onChange={setCustomDuration}
-            />
-          </div>
-          
-          {/* 班次类型选择选项 */}
-          <div className="mb-2 sm:mb-3">
-            <label className="block text-gray-700 text-xs sm:text-sm font-bold mb-1">
-              {t('time_entry.custom_shift.shift_type')}
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-              <label className="flex items-center p-2 rounded-lg border border-gray-200 hover:border-indigo-300 cursor-pointer transition-colors duration-200">
-                <input
-                  type="radio"
-                  name="shiftType"
-                  value="day"
-                  checked={shiftType === 'day'}
-                  onChange={(e) => setShiftType(e.target.value)}
-                  className="form-radio h-4 w-4 text-indigo-600"
-                />
-                <span className="ml-1.5 sm:ml-2 text-gray-700 text-xs sm:text-sm">{t('time_entry.custom_shift.day_shift')}</span>
-              </label>
-              <label className="flex items-center p-2 rounded-lg border border-gray-200 hover:border-indigo-300 cursor-pointer transition-colors duration-200">
-                <input
-                  type="radio"
-                  name="shiftType"
-                  value="rest"
-                  checked={shiftType === 'rest'}
-                  onChange={(e) => setShiftType(e.target.value)}
-                  className="form-radio h-4 w-4 text-indigo-600"
-                />
-                <span className="ml-1.5 sm:ml-2 text-gray-700 text-xs sm:text-sm">{t('time_entry.custom_shift.rest_day')}</span>
-              </label>
-              <label className="flex items-center p-2 rounded-lg border border-gray-200 hover:border-indigo-300 cursor-pointer transition-colors duration-200">
-                <input
-                  type="radio"
-                  name="shiftType"
-                  value="overnight"
-                  checked={shiftType === 'overnight'}
-                  onChange={(e) => setShiftType(e.target.value)}
-                  className="form-radio h-4 w-4 text-indigo-600"
-                />
-                <span className="ml-1.5 sm:ml-2 text-gray-700 text-xs sm:text-sm">{t('time_entry.custom_shift.overnight_shift')}</span>
-              </label>
-              <label className="flex items-center p-2 rounded-lg border border-gray-200 hover:border-indigo-300 cursor-pointer transition-colors duration-200">
-                <input
-                  type="radio"
-                  name="shiftType"
-                  value="special"
-                  checked={shiftType === 'special'}
-                  onChange={(e) => setShiftType(e.target.value)}
-                  className="form-radio h-4 w-4 text-indigo-600"
-                />
-                <span className="ml-1.5 sm:ml-2 text-gray-700 text-xs sm:text-sm">{t('time_entry.custom_shift.special_shift')}</span>
-              </label>
-            </div>
-          </div>
+          {/* 移除班次类型选择选项 */}
           
           {/* 颜色选择器 */}
           <ColorPicker 
@@ -344,10 +213,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
                 setShowForm(false);
                 setEditingShift(null);
                 setShiftName('');
-                setStartTime('09:00');
-                setEndTime('17:00');
-                setCustomDuration('');
-                setShiftType('day');
+                setInstructor(''); // 重置导师姓名
                 setCustomHue(180); // 重置为默认值（青色）
               }}
               className="w-auto px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 text-base sm:text-sm"
@@ -374,8 +240,8 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
                 draggedOver === shift.id ? 'ring-2 ring-blue-400 ring-opacity-50' : ''
               }`}
               style={{ 
-                borderLeft: `4px solid ${getShiftColor(shift.shiftType, shift.customHue)}`,
-                backgroundColor: getShiftBackgroundColor(shift.shiftType, shift.customHue),
+                borderLeft: `4px solid ${getShiftColor(null, shift.customHue)}`,
+                backgroundColor: getShiftBackgroundColor(null, shift.customHue),
                 boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.05)'
               }}
               draggable
@@ -388,29 +254,24 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
             >
               <div className="md:p-3 p-1.5">
                 <div className="flex justify-between items-start">
-                  {/* 左侧：班次名称和类型标识 */}
+                  {/* 左侧：班次名称 */}
                   <div className="flex items-start min-w-0">
                     <div 
                       className="w-3.5 h-3.5 rounded-full border-2 border-white shadow mr-2.5 mt-1 flex-shrink-0"
-                      style={{ backgroundColor: getShiftColor(shift.shiftType, shift.customHue) }}
+                      style={{ backgroundColor: getShiftColor(null, shift.customHue) }}
                     ></div>
-                    <div className="min-w-0 flex-1 flex items-center">
+                    <div className="min-w-0 flex-1 flex flex-col">
                       <h3 
-                        className="font-bold text-gray-800 md:text-base text-sm truncate leading-tight mr-2"
-                        style={{ color: getShiftColor(shift.shiftType, shift.customHue) }}
-                      >
-                        {shift.name}
-                      </h3>
-                      {/* 类型标识：显示班次类型，带颜色填充 */}
-                      <span 
-                        className="inline-flex items-center px-0.5 py-0 md:px-2 md:py-0.5 rounded-full text-[10px] md:text-xs font-medium whitespace-nowrap"
-                        style={{
-                          backgroundColor: getShiftTypeBackgroundColor(shift.shiftType, shift.customHue),
-                          color: getShiftColor(shift.shiftType, shift.customHue)
-                        }}
-                      >
-                        {getShiftTypeText(shift.shiftType || 'day')}
-                      </span>
+                      className="font-bold text-gray-800 md:text-base text-sm truncate leading-tight"
+                      style={{ color: getShiftColor(null, shift.customHue) }}
+                    >
+                      {shift.name}
+                    </h3>
+                    {shift.instructor && (
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        导师: {shift.instructor}
+                      </div>
+                    )}
                     </div>
                   </div>
                   
@@ -438,29 +299,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
                 </div>
                 
                 {/* 底部：时间范围和工时时长 */}
-                <div className="flex justify-between items-center md:mt-2 mt-2 md:pt-2 pt-2 border-t border-gray-100">
-                  <div className="flex items-center">
-                    <svg className="w-3 md:w-4 h-3 md:h-4 text-gray-400 mr-1 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span className="text-gray-600 md:text-sm text-xs font-medium">
-                      {shift.startTime} - {shift.endTime}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center">
-                    <svg className="w-3 md:w-4 h-3 md:h-4 text-gray-400 mr-1 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span className="text-gray-700 md:text-sm text-xs font-bold">
-                      {shift.customDuration !== undefined && shift.customDuration !== null && shift.customDuration !== "" ? (
-                        `${convertDurationToHours(shift.customDuration).toFixed(1)}h`
-                      ) : (
-                        '0.0h'
-                      )}
-                    </span>
-                  </div>
-                </div>
+                {/* 移除班次类型信息显示 */}
               </div>
             </div>
           ))}

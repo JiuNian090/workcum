@@ -25,10 +25,12 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [courseTemplates, setCourseTemplates] = useState([]);
   const [formData, setFormData] = useState({
     id: null,
     date: '',
-    selectedShift: '' // 只保留班次选择
+    selectedCourse: '',
+    location: ''
   });
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedDateForReplace, setSelectedDateForReplace] = useState(null);
@@ -96,6 +98,14 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   useEffect(() => {
     const savedShifts = JSON.parse(localStorage.getItem('customShifts') || '[]');
     setShifts(savedShifts);
+  }, []);
+
+  // Load course templates from localStorage
+  useEffect(() => {
+    const savedTemplates = localStorage.getItem('courseTemplates');
+    if (savedTemplates) {
+      setCourseTemplates(JSON.parse(savedTemplates));
+    }
   }, []);
 
   // Load time slots from localStorage

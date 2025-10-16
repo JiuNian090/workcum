@@ -1,64 +1,51 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ColorPicker = ({ selectedColor, onColorChange, colorOptions }) => {
+const ColorPicker = ({ selectedColor, onColorChange }) => {
   const { t } = useTranslation();
-  
-  // 预定义的颜色选项（默认选项）
-  const defaultColorOptions = [
-    { name: t('time_entry.custom_shift.colors.green'), hue: 120 },
-    { name: t('time_entry.custom_shift.colors.blue'), hue: 220 },
-    { name: t('time_entry.custom_shift.colors.purple'), hue: 280 },
-    { name: t('time_entry.custom_shift.colors.indigo'), hue: 240 },
-    { name: t('time_entry.custom_shift.colors.red'), hue: 0 },
-    { name: t('time_entry.custom_shift.colors.pink'), hue: 330 },
-    { name: t('time_entry.custom_shift.colors.teal'), hue: 180 },
-    { name: t('time_entry.custom_shift.colors.yellow'), hue: 60 }
-  ];
-  
-  // 使用传入的颜色选项或默认选项
-  const options = colorOptions || defaultColorOptions;
 
   // 根据色调生成颜色值
   const getColorValue = (hue) => `hsl(${hue}, 80%, 50%)`;
-  const getBackgroundColorValue = (hue) => `hsl(${hue}, 80%, 90%)`;
+
+  // 处理颜色滑块变化
+  const handleHueChange = (e) => {
+    const hue = parseInt(e.target.value);
+    onColorChange(hue);
+  };
 
   return (
     <div className="mb-2.5 sm:mb-3">
       <label className="block text-gray-700 text-xs sm:text-sm font-bold mb-1">
         {t('time_entry.custom_shift.color_picker')}
       </label>
-      {/* 在移动端使用更紧凑的网格布局 */}
-      <div className="grid grid-cols-4 sm:grid-cols-4 gap-1 sm:gap-1.5">
-        {options.map((color, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => onColorChange(color.hue)}
-            className={`flex flex-col items-center p-1 sm:p-1.5 rounded-lg sm:rounded-lg border-2 transition-all duration-200 ${
-              selectedColor === color.hue 
-                ? 'ring-2 ring-offset-1 sm:ring-offset-2 ring-indigo-500 border-indigo-500' 
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-            style={{ backgroundColor: getBackgroundColorValue(color.hue) }}
-          >
+      
+      {/* 自定义颜色条 */}
+      <div className="space-y-2">
+        <div className="relative h-8 rounded-lg overflow-hidden shadow-sm border border-gray-200">
+          <input
+            type="range"
+            min="0"
+            max="360"
+            value={selectedColor}
+            onChange={handleHueChange}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          />
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500"
+          ></div>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <div 
-              className="w-4 h-4 sm:w-5 sm:h-5 rounded-full mb-0.5 border border-gray-300"
-              style={{ backgroundColor: getColorValue(color.hue) }}
+              className="w-6 h-6 rounded-full border border-gray-300 mr-2 shadow-sm"
+              style={{ backgroundColor: getColorValue(selectedColor) }}
             ></div>
-            {/* 在所有设备上显示颜色名称 */}
-            <span className="text-[9px] sm:text-[10px] text-gray-700">{color.name}</span>
-          </button>
-        ))}
-      </div>
-      <div className="mt-1.5 sm:mt-2 flex items-center">
-        <div 
-          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-gray-300 mr-1.5 sm:mr-2"
-          style={{ backgroundColor: getColorValue(selectedColor) }}
-        ></div>
-        <span className="text-[10px] sm:text-xs text-gray-600">
-          {t('time_entry.custom_shift.selected_color')}: {getColorValue(selectedColor)}
-        </span>
+            <span className="text-xs text-gray-600">
+              {t('time_entry.custom_shift.selected_color')}: {selectedColor}°
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

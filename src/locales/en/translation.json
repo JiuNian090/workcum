@@ -8,6 +8,11 @@
     "data": "My",
     "time_entry": "Course"
   },
+  "course": {
+    "title": "Course",
+    "instructor": "Instructor",
+    "instructor_placeholder": "Enter instructor name"
+  },
   "common": {
     "add": "Add",
     "edit": "Edit",
@@ -30,6 +35,7 @@
     "yes": "Yes",
     "no": "No",
     "json": "JSON",
+    "back": "Back",
     "weekdays": {
       "monday": "Mon",
       "tuesday": "Tue",

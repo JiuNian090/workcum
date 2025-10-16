@@ -44,37 +44,37 @@ export const getDefaultColorConfig = () => {
 
 /**
  * 根据班次类型和自定义色调获取边框颜色
- * @param {string} shiftType - 班次类型 ('day', 'overnight', 'rest', 'regular', 'special')
+ * @param {string|null} shiftType - 班次类型 ('day', 'overnight', 'rest', 'regular', 'special') 或 null
  * @param {number} customHue - 可选的自定义色调值 (0-360)
  * @returns {string} HSL颜色字符串
  */
 export const getShiftColor = (shiftType = 'day', customHue = null) => {
   // 如果提供了自定义色调，则使用它
   if (customHue !== null && customHue !== undefined) {
-    const config = shiftTypeToColorMap[shiftType] || getDefaultColorConfig();
+    const config = shiftType && shiftTypeToColorMap[shiftType] ? shiftTypeToColorMap[shiftType] : getDefaultColorConfig();
     return `hsl(${customHue}, ${config.saturation}%, ${config.lightness}%)`;
   }
   
   // 否则使用默认配置
-  const config = shiftTypeToColorMap[shiftType] || getDefaultColorConfig();
+  const config = shiftType && shiftTypeToColorMap[shiftType] ? shiftTypeToColorMap[shiftType] : getDefaultColorConfig();
   return `hsl(${config.hue}, ${config.saturation}%, ${config.lightness}%)`;
 };
 
 /**
  * 根据班次类型和自定义色调获取背景颜色
- * @param {string} shiftType - 班次类型 ('day', 'overnight', 'rest', 'regular', 'special')
+ * @param {string|null} shiftType - 班次类型 ('day', 'overnight', 'rest', 'regular', 'special') 或 null
  * @param {number} customHue - 可选的自定义色调值 (0-360)
  * @returns {string} HSL颜色字符串
  */
 export const getShiftBackgroundColor = (shiftType = 'day', customHue = null) => {
   // 如果提供了自定义色调，则使用它
   if (customHue !== null && customHue !== undefined) {
-    const config = shiftTypeToColorMap[shiftType] || getDefaultColorConfig();
+    const config = shiftType && shiftTypeToColorMap[shiftType] ? shiftTypeToColorMap[shiftType] : getDefaultColorConfig();
     return `hsl(${customHue}, ${config.saturation}%, ${config.bgLightness}%)`;
   }
   
   // 否则使用默认配置
-  const config = shiftTypeToColorMap[shiftType] || getDefaultColorConfig();
+  const config = shiftType && shiftTypeToColorMap[shiftType] ? shiftTypeToColorMap[shiftType] : getDefaultColorConfig();
   return `hsl(${config.hue}, ${config.saturation}%, ${config.bgLightness}%)`;
 };
 

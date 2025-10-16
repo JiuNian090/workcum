@@ -6,6 +6,11 @@
     "schedule": "课表",
     "data": "我的"
   },
+  "course": {
+    "title": "课程",
+    "instructor": "导师",
+    "instructor_placeholder": "请输入导师姓名"
+  },
   "common": {
     "add": "添加",
     "edit": "编辑",
@@ -28,6 +33,7 @@
     "yes": "是",
     "no": "否",
     "json": "JSON",
+    "back": "返回",
     "weekdays": {
       "monday": "周一",
       "tuesday": "周二",
