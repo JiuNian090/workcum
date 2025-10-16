@@ -30,6 +30,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   });
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedDateForReplace, setSelectedDateForReplace] = useState(null);
+  const [timeSlots, setTimeSlots] = useState([]); // 时间段配置
+  const [showTimeSlotConfig, setShowTimeSlotConfig] = useState(false); // 时间段配置模态框
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null); // 当前选中的时间段
 
   // Load schedules from localStorage
   useEffect(() => {
@@ -73,6 +76,68 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     const savedShifts = JSON.parse(localStorage.getItem('customShifts') || '[]');
     setShifts(savedShifts);
   }, []);
+
+  // Load time slots from localStorage
+  useEffect(() => {
+    const savedTimeSlots = JSON.parse(localStorage.getItem('timeSlots') || '[]');
+    if (savedTimeSlots.length > 0) {
+      // 检查localStorage中的数据是否需要更新
+        const shouldResetTimeSlots = savedTimeSlots && savedTimeSlots.some(slot => !slot.groupName || slot.groupName.startsWith('组'));
+        
+        if (!savedTimeSlots || shouldResetTimeSlots) {
+          // 默认时间段配置：一天三组，每组四个时间段
+          const defaultTimeSlots = [
+            // 上午时段 (groupId: 1)
+            { id: 1, start: '08:00', end: '09:00', group: 1, groupName: '上午' },
+            { id: 2, start: '09:00', end: '10:00', group: 1, groupName: '上午' },
+            { id: 3, start: '10:00', end: '11:00', group: 1, groupName: '上午' },
+            { id: 4, start: '11:00', end: '12:00', group: 1, groupName: '上午' },
+            // 下午时段 (groupId: 2)
+            { id: 5, start: '13:00', end: '14:00', group: 2, groupName: '下午' },
+            { id: 6, start: '14:00', end: '15:00', group: 2, groupName: '下午' },
+            { id: 7, start: '15:00', end: '16:00', group: 2, groupName: '下午' },
+            { id: 8, start: '16:00', end: '17:00', group: 2, groupName: '下午' },
+            // 晚上时段 (groupId: 3)
+            { id: 9, start: '18:00', end: '19:00', group: 3, groupName: '晚上' },
+            { id: 10, start: '19:00', end: '20:00', group: 3, groupName: '晚上' },
+            { id: 11, start: '20:00', end: '21:00', group: 3, groupName: '晚上' },
+            { id: 12, start: '21:00', end: '22:00', group: 3, groupName: '晚上' },
+          ];
+          setTimeSlots(defaultTimeSlots);
+          localStorage.setItem('timeSlots', JSON.stringify(defaultTimeSlots));
+        } else {
+          setTimeSlots(savedTimeSlots);
+        }
+    } else {
+      // 如果没有任何时间段，使用默认配置
+      const defaultTimeSlots = [
+        // 上午时段 (groupId: 1)
+        { id: 1, start: '08:00', end: '09:00', group: 1, groupName: '上午' },
+        { id: 2, start: '09:00', end: '10:00', group: 1, groupName: '上午' },
+        { id: 3, start: '10:00', end: '11:00', group: 1, groupName: '上午' },
+        { id: 4, start: '11:00', end: '12:00', group: 1, groupName: '上午' },
+        // 下午时段 (groupId: 2)
+        { id: 5, start: '13:00', end: '14:00', group: 2, groupName: '下午' },
+        { id: 6, start: '14:00', end: '15:00', group: 2, groupName: '下午' },
+        { id: 7, start: '15:00', end: '16:00', group: 2, groupName: '下午' },
+        { id: 8, start: '16:00', end: '17:00', group: 2, groupName: '下午' },
+        // 晚上时段 (groupId: 3)
+        { id: 9, start: '18:00', end: '19:00', group: 3, groupName: '晚上' },
+        { id: 10, start: '19:00', end: '20:00', group: 3, groupName: '晚上' },
+        { id: 11, start: '20:00', end: '21:00', group: 3, groupName: '晚上' },
+        { id: 12, start: '21:00', end: '22:00', group: 3, groupName: '晚上' },
+      ];
+      setTimeSlots(defaultTimeSlots);
+      localStorage.setItem('timeSlots', JSON.stringify(defaultTimeSlots));
+    }
+  }, []);
+
+  // Save time slots to localStorage whenever they change
+  useEffect(() => {
+    if (timeSlots.length > 0) {
+      localStorage.setItem('timeSlots', JSON.stringify(timeSlots));
+    }
+  }, [timeSlots]);
 
   // Save schedules to localStorage whenever they change
   useEffect(() => {
@@ -146,6 +211,52 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       setTimeEntries(timeEntries.filter(entry => entry.id !== id));
       setShowDeleteModal(false); // 添加这行代码来关闭模态框
     }
+  };
+
+  // 处理时间段点击事件
+  const handleTimeSlotClick = (timeSlot) => {
+    setSelectedTimeSlot(timeSlot);
+    setShowTimeSlotConfig(true);
+  };
+
+  // 保存时间段配置
+  const handleTimeSlotConfigSave = (updatedSlot) => {
+    setTimeSlots(timeSlots.map(slot => 
+      slot.id === updatedSlot.id ? updatedSlot : slot
+    ));
+    setShowTimeSlotConfig(false);
+    setSelectedTimeSlot(null);
+  };
+
+  // 获取指定时间段的课程
+  const getScheduleForTimeSlot = (date, timeSlot) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return schedules.filter(schedule => 
+      schedule.date === dateStr && 
+      schedule.startTime === timeSlot.start &&
+      schedule.endTime === timeSlot.end
+    );
+  };
+
+  // 获取指定时间段的时间记录
+  const getTimeEntriesForTimeSlot = (date, timeSlot) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return timeEntries.filter(entry => 
+      entry.date === dateStr && 
+      entry.startTime === timeSlot.start
+    );
+  };
+
+  // 按组获取时间段
+  const getTimeSlotsByGroup = () => {
+    const groups = {};
+    timeSlots.forEach(slot => {
+      if (!groups[slot.group]) {
+        groups[slot.group] = [];
+      }
+      groups[slot.group].push(slot);
+    });
+    return groups;
   };
 
   const handleSubmit = (e) => {
@@ -239,60 +350,62 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   };
 
   return (
-    <div className="hide-scrollbar mt-2 h-full">
-      {/* Week view: Horizontal arrangement with date above calendar cells */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-2 h-full">
-        {weekDays.map((day, index) => {
-          const daySchedules = getScheduleForDate(day);
-          const dayTimeEntries = getTimeEntriesForDate(day);
-          const isToday = isSameDay(day, new Date());
+    <div className="hide-scrollbar mt-2 h-full overflow-x-auto">
+      {/* Table-based weekly calendar */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden w-full">
+        {/* Header row with dates */}
+        <div className="grid grid-cols-8">
+          {/* Corner cell */}
+          <div className="bg-gray-100 p-2 border-r border-b border-gray-200">
+            <div className="h-6"></div>
+          </div>
           
-          // Calculate total minutes from schedules
-          const filteredSchedules = daySchedules.filter(schedule => schedule.selectedShift);
-          const totalMinutesFromSchedules = filteredSchedules.reduce((sum, schedule) => {
-            if (schedule.selectedShift) {
-              const shift = shifts.find(s => s.id === schedule.selectedShift);
-              // 修改逻辑：如果自定义工时存在（即使是0），也使用自定义工时
-              if (shift && shift.customDuration !== undefined && shift.customDuration !== null && shift.customDuration !== "") {
-                return sum + (convertDurationToHours(shift.customDuration) * 60);
-              }
-              
-              // Calculate duration from start and end time if no custom duration
-              const start = new Date(`1970-01-01T${schedule.startTime}:00`);
-              const end = new Date(`1970-01-01T${schedule.endTime}:00`);
-              const duration = (end - start) / (1000 * 60); // Convert to minutes
-              return sum + duration;
-            }
-            return sum;
-          }, 0);
-
-          return (
-            <div 
-              key={index} 
-              className="flex flex-col h-full"
-            >
-              {/* Date information above calendar cell */}
-              <div className={`flex flex-col items-center justify-center py-1 rounded-t-lg flex-shrink-0 ${
-                isToday ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-700'
-              }`}>
-                <div className="text-[0.6rem] sm:text-xs font-bold">
+          {/* Date headers */}
+          {weekDays.map((day, index) => {
+            const isToday = isSameDay(day, new Date());
+            return (
+              <div 
+                key={index} 
+                className={`bg-gray-100 p-1 border-b border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-100 text-blue-600' : ''}`}
+              >
+                <div className="text-[0.6rem] sm:text-xs font-bold text-center">
                   {format(day, 'EEE', { locale: zhCN })}
                 </div>
-                <div className="text-sm sm:text-base font-bold">
+                <div className="text-sm sm:text-base font-bold text-center">
                   {format(day, 'd', { locale: zhCN })}
                 </div>
               </div>
+            );
+          })}
+        </div>
+        
+        {/* Time slots and calendar cells */}
+        {timeSlots.map((timeSlot) => (
+          <div key={timeSlot.id} className="grid grid-cols-8 border-b border-gray-200 last:border-b-0">
+            {/* Time slot column */}
+            <div 
+              className="bg-white border-r border-gray-200 p-1 hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-center"
+              onClick={() => handleTimeSlotClick(timeSlot)}
+            >
+              <div className="text-[0.6rem] text-center w-full">
+                <div className="text-gray-700 font-medium">{timeSlot.start}</div>
+                <div className="text-gray-400">{timeSlot.end}</div>
+              </div>
+            </div>
+            
+            {/* Day cells for each time slot row */}
+            {weekDays.map((day) => {
+              const isToday = isSameDay(day, new Date());
+              const slotSchedules = getScheduleForTimeSlot(day, timeSlot);
+              const slotTimeEntries = getTimeEntriesForTimeSlot(day, timeSlot);
               
-              {/* Calendar cell with events */}
-              <div 
-                className={`flex-grow rounded-b-lg p-1 sm:p-2 cursor-pointer transition-all duration-200 hover:shadow-md flex flex-col ${
-                  isToday ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-300 shadow-sm' : 'border border-gray-200 bg-white'
-                }`}
-                onClick={() => handleDateClick(day)}
-              >
-                <div className="flex flex-col gap-1 flex-grow">
-                  {/* Display schedules */}
-                  {daySchedules.map((schedule) => {
+              return (
+                <div 
+                  key={`${day}-${timeSlot.id}`}
+                  className={`bg-white border-r border-gray-200 last:border-r-0 p-1 hover:bg-gray-50 transition-colors flex items-center justify-center ${isToday ? 'bg-blue-50' : ''}`}
+                  onClick={() => handleDateClick(day)}
+                >
+                  {slotSchedules.length > 0 && slotSchedules.map((schedule) => {
                     // 获取班次信息
                     const shiftInfo = shifts.find(shift => shift.id === schedule.selectedShift);
                     const shiftName = shiftInfo ? shiftInfo.name : schedule.title;
@@ -303,9 +416,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                     return (
                       <div 
                         key={schedule.id} 
-                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-xs"
+                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-1 text-[0.55rem] h-full w-full flex flex-col justify-center"
                         style={{ 
-                          borderLeft: `3px solid ${getShiftColor(shiftType, customHue)}`,
+                          borderLeft: `2px solid ${getShiftColor(shiftType, customHue)}`,
                           backgroundColor: getShiftBackgroundColor(shiftType, customHue),
                           boxShadow: 'inset 0 0 5px rgba(0, 0, 0, 0.05)'
                         }}
@@ -314,59 +427,32 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                           handleEdit(schedule);
                         }}
                       >
-                        <div className="flex justify-between items-start">
-                          {/* 左侧：班次名称和类型标识 */}
-                          <div className="flex items-start min-w-0">
-                            <div 
-                              className="w-2.5 h-2.5 rounded-full border border-white shadow mr-1.5 mt-0.5 flex-shrink-0"
-                              style={{ backgroundColor: getShiftColor(shiftType, customHue) }}
-                            ></div>
-                            <div className="min-w-0 flex-1 flex items-center">
-                              <h3 
-                                className="font-bold text-gray-800 leading-tight mr-1 truncate"
-                                style={{ color: getShiftColor(shiftType, customHue) }}
-                              >
-                                {shiftName}
-                              </h3>
-                              {/* 类型标识：显示班次类型，带颜色填充 */}
-                              <span 
-                                className="inline-flex items-center px-1 py-0.5 rounded-full text-[0.5rem] font-medium whitespace-nowrap mr-1"
-                                style={{
-                                  backgroundColor: getShiftTypeBackgroundColor(shiftType, customHue),
-                                  color: getShiftColor(shiftType, customHue)
-                                }}
-                              >
-                                {shiftType === 'overnight' && t('time_entry.custom_shift.overnight_shift')}
-                                {shiftType === 'rest' && t('time_entry.custom_shift.rest_day')}
-                                {shiftType === 'day' && t('time_entry.custom_shift.day_shift')}
-                                {shiftType === 'special' && t('time_entry.custom_shift.special_shift')}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* 右侧：时间范围 */}
-                          <div className="flex flex-col items-end ml-1 flex-shrink-0">
-                            <div className="flex items-center">
-                              <svg className="w-2.5 h-2.5 text-gray-400 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                              </svg>
-                              <span className="text-gray-600 text-[0.6rem] font-medium whitespace-nowrap">
-                                {formatTime(schedule.startTime)}
-                              </span>
-                            </div>
-                          </div>
+                        <h3 
+                          className="font-bold leading-tight truncate"
+                          style={{ color: getShiftColor(shiftType, customHue) }}
+                        >
+                          {shiftName}
+                        </h3>
+                        <div className="flex justify-between items-center mt-0.5">
+                          <span className="text-gray-600">
+                            {formatTime(schedule.startTime)}
+                          </span>
+                          {shiftInfo?.customDuration && (
+                            <span className="bg-white bg-opacity-70 px-1 py-0.5 rounded font-bold">
+                              [{convertDurationToHours(shiftInfo.customDuration).toFixed(1)}h]
+                            </span>
+                          )}
                         </div>
                       </div>
                     );
                   })}
                   
-                  {/* Display time entries */}
-                  {dayTimeEntries.map((entry) => {
+                  {slotTimeEntries.length > 0 && slotTimeEntries.map((entry) => {
                     const entryColor = getEntryColor(entry.customHue);
                     return (
                       <div 
                         key={entry.id} 
-                        className="text-[0.6rem] font-semibold p-1.5 rounded truncate cursor-pointer hover:scale-[1.01] transition-all duration-200 shadow-sm"
+                        className="text-[0.55rem] font-semibold p-1 rounded truncate cursor-pointer hover:scale-[1.01] transition-all duration-200 shadow-sm h-full flex flex-col justify-center"
                         style={{
                           backgroundColor: entryColor.backgroundColor,
                           border: `1px solid ${entryColor.borderColor}`
@@ -385,36 +471,20 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         >
                           {entry.notes || t('time_entry.entry')}
                         </div>
-                        <div 
-                          className="text-[0.55rem] font-medium flex justify-between mt-0.5"
-                          style={{
-                            color: entryColor.textColor
-                          }}
-                        >
-                          <span>
-                            {formatTime(entry.startTime)}
-                          </span>
-                          {entry.duration && (
-                            <span className="bg-white bg-opacity-70 px-1 py-0.5 rounded font-bold">
-                              [{(entry.duration / 60).toFixed(1)}h]
-                            </span>
-                          )}
-                        </div>
                       </div>
                     );
                   })}
                   
-                  {/* Show placeholder if no items */}
-                  {daySchedules.length === 0 && dayTimeEntries.length === 0 && (
-                    <div className="text-gray-400 italic py-2 text-center text-[0.6rem] bg-gray-50 rounded flex items-center justify-center flex-grow">
-                      {t('schedule.no_events')}
+                  {/* Empty slot indicator */}
+                  {slotSchedules.length === 0 && slotTimeEntries.length === 0 && (
+                    <div className="text-[0.4rem] text-gray-300 text-center py-0.5">
                     </div>
                   )}
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {showModal && (

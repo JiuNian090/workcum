@@ -217,6 +217,14 @@
       "shift_required": "Please select a course template"
     }
   },
+  "time_slot_config": {
+    "title": "Time Slot Configuration",
+    "start_time": "Start Time",
+    "end_time": "End Time",
+    "group_name": "Time Slot Group",
+    "save_success": "Time slot configuration saved successfully",
+    "confirm_delete": "Are you sure you want to delete this time slot?"
+  },
   "shifts": {
       "custom_shifts": "Custom Courses",
       "name": "Course Name",

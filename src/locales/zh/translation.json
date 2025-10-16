@@ -251,6 +251,14 @@
     "replace_warning": "该日期已有课表或记录，继续操作将替换现有内容。确定要继续吗？",
     "replace": "替换"
   },
+  "time_slot_config": {
+    "title": "时间段配置",
+    "start_time": "开始时间",
+    "end_time": "结束时间",
+    "group_name": "时间段组",
+    "save_success": "时间段配置保存成功",
+    "confirm_delete": "确定要删除这个时间段吗？"
+  },
   "shifts": {
     "custom_shifts": "自定义课程",
     "name": "班次名称",
