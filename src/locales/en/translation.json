@@ -9,9 +9,7 @@
     "time_entry": "Course"
   },
   "course": {
-    "title": "Course",
-    "instructor": "Instructor",
-    "instructor_placeholder": "Enter instructor name"
+    "title": "Course"
   },
   "common": {
     "add": "Add",

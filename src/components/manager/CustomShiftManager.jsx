@@ -10,7 +10,6 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
   const [shiftName, setShiftName] = useState('');
-  const [instructor, setInstructor] = useState(''); // 导师姓名
   const [customHue, setCustomHue] = useState(180); // 添加自定义色调状态，默认为青色
   
   // Drag and drop sorting related state
@@ -41,7 +40,6 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     const newShift = {
       id: editingShift ? editingShift.id : Date.now().toString(),
       name: shiftName,
-      instructor, // 保存导师姓名
       customHue // 保存自定义色调
     };
     
@@ -56,15 +54,13 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     
     // Reset form
     setShiftName('');
-      setInstructor(''); // 重置导师姓名
-      setCustomHue(180); // 重置为默认值（青色）
+    setCustomHue(180); // 重置为默认值（青色）
       setShowForm(false);
   };
 
   const handleEdit = (shift) => {
     setEditingShift(shift);
     setShiftName(shift.name);
-    setInstructor(shift.instructor || ''); // 设置导师姓名，如果不存在则为空
     setCustomHue(shift.customHue !== undefined ? shift.customHue : 180); // 设置自定义色调，如果不存在则默认为青色
     setShowForm(true);
     
@@ -160,7 +156,6 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
           setShowForm(false);
       setEditingShift(null);
       setShiftName('');
-      setInstructor(''); // 重置导师姓名
       setCustomHue(180); // 重置为默认值（青色）
         }}
         size="md"
@@ -182,19 +177,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
             />
 </div>
         
-        <div className="mb-2 sm:mb-3">
-          <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor="instructor">
-            导师
-          </label>
-          <input
-            type="text"
-            id="instructor"
-            value={instructor}
-            onChange={(e) => setInstructor(e.target.value)}
-            className="shadow appearance-none border rounded-xl w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-xs sm:text-sm"
-            placeholder="请输入导师姓名"
-          />
-        </div>
+
           
           {/* 移除时间和自定义工时字段 */}
           
@@ -213,7 +196,6 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
                 setShowForm(false);
                 setEditingShift(null);
                 setShiftName('');
-                setInstructor(''); // 重置导师姓名
                 setCustomHue(180); // 重置为默认值（青色）
               }}
               className="w-auto px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200 text-base sm:text-sm"
@@ -267,11 +249,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
                     >
                       {shift.name}
                     </h3>
-                    {shift.instructor && (
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        导师: {shift.instructor}
-                      </div>
-                    )}
+
                     </div>
                   </div>
                   

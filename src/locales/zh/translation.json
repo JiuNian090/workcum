@@ -7,9 +7,7 @@
     "data": "我的"
   },
   "course": {
-    "title": "课程",
-    "instructor": "导师",
-    "instructor_placeholder": "请输入导师姓名"
+    "title": "课程"
   },
   "common": {
     "add": "添加",
