@@ -5,8 +5,7 @@ const TimeSlotConfigModal = ({ timeSlot, onSave, onCancel }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     start: timeSlot.start,
-    end: timeSlot.end,
-    groupName: timeSlot.groupName
+    end: timeSlot.end
   });
 
   const handleChange = (e) => {
@@ -44,8 +43,7 @@ const TimeSlotConfigModal = ({ timeSlot, onSave, onCancel }) => {
     const updatedTimeSlot = {
       ...timeSlot,
       start: formData.start,
-      end: formData.end,
-      groupName: formData.groupName
+      end: formData.end
     };
     
     onSave(updatedTimeSlot);
@@ -86,22 +84,6 @@ const TimeSlotConfigModal = ({ timeSlot, onSave, onCancel }) => {
               required
             />
           </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('time_slot_config.group_name') || '时间段组'}
-          </label>
-          <select
-            name="groupName"
-            value={formData.groupName}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="上午">上午</option>
-            <option value="下午">下午</option>
-            <option value="晚上">晚上</option>
-          </select>
         </div>
         
         <div className="flex justify-end gap-3 pt-2">

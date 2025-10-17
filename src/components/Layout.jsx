@@ -82,7 +82,7 @@ const Layout = () => {
 
       {/* Mobile Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-2xl z-50 border-t border-gray-100">
-        <div className="flex justify-around items-center py-2 px-1">
+        <div className="flex justify-around items-center py-0.5 px-1">
           <Link to="/" className={getMobileLinkClass("/")}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
