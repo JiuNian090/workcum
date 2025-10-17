@@ -14,17 +14,21 @@ import { getShiftColor, getShiftBackgroundColor, getShiftTypeBackgroundColor } f
 import { getEntryColor } from '@/utils/entryColor.js'; // 导入时间记录颜色工具函数
 import Modal from '../modals/Modal.jsx'; // 导入统一的Modal组件
 import { useSwipeSelection } from '@/hooks/useSwipeSelection'; // 导入滑动选择hook
+import { getCurrentWeekNumber, isInSemester } from '@/utils/semesterUtils'; // 导入学期工具函数
 
 const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const { t } = useTranslation();
   const [schedules, setSchedules] = useState([]);
   const [timeEntries, setTimeEntries] = useState([]);
   const [shifts, setShifts] = useState([]); // Add shifts state
+  const [courses, setCourses] = useState([]); // Add courses state
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [courseTemplates, setCourseTemplates] = useState([]);
+  const [currentSemesterWeek, setCurrentSemesterWeek] = useState(0);
+  const [inSemester, setInSemester] = useState(false);
   const [formData, setFormData] = useState({
     id: null,
     date: '',
@@ -79,6 +83,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       if (e.key === 'customShifts') {
         const savedShifts = JSON.parse(e.newValue || '[]');
         setShifts(savedShifts);
+        setCourseTemplates(savedShifts);
+      }
+      if (e.key === 'courses') {
+        const savedCourses = JSON.parse(e.newValue || '[]');
+        setCourses(savedCourses);
       }
     };
 
@@ -96,12 +105,46 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     setShifts(savedShifts);
   }, []);
 
-  // Load course templates from localStorage
+  // Load course templates from localStorage on component mount
   useEffect(() => {
-    const savedTemplates = localStorage.getItem('courseTemplates');
+    const savedTemplates = localStorage.getItem('customShifts');
     if (savedTemplates) {
       setCourseTemplates(JSON.parse(savedTemplates));
     }
+  }, []);
+
+  // Load courses from localStorage
+  useEffect(() => {
+    const savedCourses = JSON.parse(localStorage.getItem('courses') || '[]');
+    setCourses(savedCourses);
+  }, []);
+
+  // 监听学期设置变化
+  useEffect(() => {
+    const updateSemesterInfo = () => {
+      setCurrentSemesterWeek(getCurrentWeekNumber());
+      setInSemester(isInSemester());
+    };
+
+    // 初始化学期信息
+    updateSemesterInfo();
+
+    // 监听storage事件
+    const handleStorageChange = (e) => {
+      if (e.key === 'semesterSettings') {
+        updateSemesterInfo();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 定期更新周数（每分钟更新一次）
+    const intervalId = setInterval(updateSemesterInfo, 60000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
   }, []);
 
   // 设置静态时间线 - 只显示小时
@@ -303,6 +346,12 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     );
   };
 
+  const getCoursesForDate = (date) => {
+    return courses.filter(course => 
+      isSameDay(new Date(course.date), date)
+    );
+  };
+
   const formatTime = (time) => {
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
@@ -315,9 +364,17 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         {/* Header row with dates only */}
         <div className="grid" style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}>
           {/* Empty cell for time column */}
-          <div className="bg-gray-100 border-b border-r border-gray-200 p-1">
-            <div className="text-xs font-bold text-center">
-              时间
+          <div className="bg-gray-100 border-b border-r border-gray-200 p-1 relative">
+            <div className="text-xs font-bold text-center h-full">
+              {inSemester && currentSemesterWeek > 0 ? (
+                <div className="relative h-8 w-full">
+                  <span className="absolute top-0 left-0 text-indigo-600 font-bold text-[8px]">第</span>
+                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-indigo-600 font-bold">{currentSemesterWeek}</span>
+                  <span className="absolute bottom-0 right-0 text-indigo-600 font-bold text-[8px]">周</span>
+                </div>
+              ) : (
+                <span>时间</span>
+              )}
             </div>
           </div>
           
@@ -329,10 +386,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 key={index} 
                 className={`bg-gray-100 p-1 border-b border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-100 text-blue-600' : ''}`}
               >
-                <div className="text-[0.6rem] sm:text-xs font-bold text-center">
+                <div className="text-sm sm:text-base font-bold text-center text-indigo-700">
                   {format(day, 'EEE', { locale: zhCN })}
                 </div>
-                <div className="text-sm sm:text-base font-bold text-center">
+                <div className="text-xs sm:text-sm text-center text-gray-600">
                   {format(day, 'd', { locale: zhCN })}
                 </div>
               </div>
@@ -361,6 +418,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             const isToday = isSameDay(day, new Date());
             const daySchedules = getScheduleForDate(day);
             const dayTimeEntries = getTimeEntriesForDate(day);
+            const dayCourses = getCoursesForDate(day);
             
             return (
               <div 
@@ -369,6 +427,45 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
               >
                 {/* 显示该日期的所有日程和工时条目，不按时间段分隔 */}
                 <div className="p-2 min-h-[400px]">
+                  {dayCourses.length > 0 && dayCourses.map((course) => {
+                    // 获取课程模板信息
+                    const template = courseTemplates.find(t => t.id === course.templateId);
+                    const courseName = template ? template.name : course.name;
+                    // 使用模板的自定义色调或课程的颜色
+                    const courseColor = template && template.customHue !== undefined 
+                      ? `hsl(${template.customHue}, 70%, 50%)` 
+                      : course.color || '#3B82F6';
+                    
+                    return (
+                      <div 
+                        key={course.id} 
+                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.6rem] mb-2"
+                        style={{ 
+                          backgroundColor: courseColor + '20',
+                          border: `1px solid ${courseColor}`,
+                          borderLeft: `3px solid ${courseColor}`
+                        }}
+                      >
+                        <h3 
+                          className="font-bold leading-tight truncate"
+                          style={{ color: courseColor }}
+                        >
+                          {courseName}
+                        </h3>
+                        <div className="flex justify-between items-center mt-1">
+                          <span className="text-gray-600">
+                            {formatTime(course.startTime)} - {formatTime(course.endTime)}
+                          </span>
+                        </div>
+                        {course.location && (
+                          <div className="text-xs text-gray-500 mt-1 truncate">
+                            📍 {course.location}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  
                   {daySchedules.length > 0 && daySchedules.map((schedule) => {
                     // 获取班次信息
                     const shiftInfo = shifts.find(shift => shift.id === schedule.selectedShift);
@@ -443,7 +540,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                   })}
                   
                   {/* 如果没有日程或工时条目，不显示任何提示 */}
-                  {daySchedules.length === 0 && dayTimeEntries.length === 0 && (
+                  {daySchedules.length === 0 && dayTimeEntries.length === 0 && dayCourses.length === 0 && (
                     <div className="py-8"></div>
                   )}
                 </div>

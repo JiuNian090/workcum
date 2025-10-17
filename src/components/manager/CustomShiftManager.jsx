@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getShiftColor, getShiftBackgroundColor } from '@/utils/shiftColor.js';
 import Modal from '../modals/Modal';
 import ColorPicker from '../pickers/ColorPicker'; // 导入颜色选择器组件
+import SemesterSettingsModal from '../modals/SemesterSettingsModal'; // 导入学期设置模态框组件
 
 const CustomShiftManager = ({ scrollToEditSection }) => {
   const { t } = useTranslation();
@@ -11,6 +12,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
   const [editingShift, setEditingShift] = useState(null);
   const [shiftName, setShiftName] = useState('');
   const [customHue, setCustomHue] = useState(180); // 添加自定义色调状态，默认为青色
+  const [showSemesterSettings, setShowSemesterSettings] = useState(false); // 学期设置模态框状态
   
   // Drag and drop sorting related state
   const [draggedItem, setDraggedItem] = useState(null);
@@ -138,15 +140,27 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
               {t('time_entry.custom_shift.title')}
             </h2>
           </div>
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 text-sm whitespace-nowrap md:py-2.5 md:px-5 md:text-sm md:rounded-lg"
-          >
-            <svg className="w-4 h-4 mr-1 md:w-4 md:h-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            <span>{t('time_entry.custom_shift.add_shift')}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowSemesterSettings(true)}
+              className="flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 text-sm whitespace-nowrap"
+              title="学期设置"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              className="flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 text-sm whitespace-nowrap md:py-2.5 md:px-5 md:text-sm md:rounded-lg"
+            >
+              <svg className="w-4 h-4 mr-1 md:w-4 md:h-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span>{t('time_entry.custom_shift.add_shift')}</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -293,6 +307,12 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
           <p className="text-gray-500 max-w-md mx-auto">{t('time_entry.custom_shift.no_shifts_description')}</p>
         </div>
       )}
+      
+      {/* 学期设置模态框 */}
+      <SemesterSettingsModal 
+        isOpen={showSemesterSettings} 
+        onClose={() => setShowSemesterSettings(false)} 
+      />
     </div>
   );
 };
