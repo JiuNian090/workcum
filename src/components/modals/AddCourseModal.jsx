@@ -9,7 +9,8 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
   const [courseTemplates, setCourseTemplates] = useState([]);
   const [formData, setFormData] = useState({
     courseTemplate: '',
-    date: '',
+    weekDay: '', // 周几
+    selectedWeeks: [], // 选中的周数（可多选）
     startTime: '',
     endTime: '',
     location: ''
@@ -59,7 +60,8 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
   const resetForm = () => {
     setFormData({
       courseTemplate: '',
-      date: '',
+      weekDay: '',
+      selectedWeeks: [],
       startTime: '',
       endTime: '',
       location: ''
@@ -76,7 +78,7 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if (!formData.courseTemplate || !formData.date || !formData.startTime || !formData.endTime) {
+    if (!formData.courseTemplate || !formData.weekDay || formData.selectedWeeks.length === 0 || !formData.startTime || !formData.endTime) {
       alert('请填写所有必填字段');
       return;
     }
@@ -84,20 +86,36 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
     // 获取选中的课程模板
     const selectedTemplate = courseTemplates.find(template => template.id === formData.courseTemplate);
     
-    // 创建新课程
-    const newCourse = {
-      id: Date.now().toString(),
-      templateId: selectedTemplate.id, // 添加模板ID引用
-      name: selectedTemplate.name,
-      color: selectedTemplate.customHue !== undefined ? `hsl(${selectedTemplate.customHue}, 70%, 50%)` : '#6366f1', // 使用自定义色调或默认颜色
-      date: formData.date,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-      location: formData.location
-    };
+    // 为每个选中的周创建课程
+    const newCourses = formData.selectedWeeks.map(week => {
+      // 计算该周对应的具体日期
+      const startOfWeek = new Date(currentWeek);
+      const dayOfWeek = startOfWeek.getDay();
+      const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+      const monday = new Date(startOfWeek.setDate(diff));
+      
+      // 计算目标周数的周一日期
+      const targetWeekMonday = new Date(monday);
+      targetWeekMonday.setDate(monday.getDate() + (week - 1) * 7);
+      
+      // 计算周几对应的日期
+      const courseDate = new Date(targetWeekMonday);
+      courseDate.setDate(targetWeekMonday.getDate() + parseInt(formData.weekDay) - 1);
+      
+      return {
+        id: `${Date.now()}_${week}`, // 为每个课程添加唯一ID
+        templateId: selectedTemplate.id,
+        name: selectedTemplate.name,
+        color: selectedTemplate.customHue !== undefined ? `hsl(${selectedTemplate.customHue}, 70%, 50%)` : '#6366f1',
+        date: format(courseDate, 'yyyy-MM-dd'),
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        location: formData.location
+      };
+    });
 
-    // 调用添加课程回调
-    onAddCourse(newCourse);
+    // 调用添加课程回调，传入课程数组
+    onAddCourse(newCourses);
     
     // 关闭弹窗
     handleClose();
@@ -110,6 +128,35 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
       ...prev,
       [name]: value
     }));
+  };
+
+  // 处理周几选择
+  const handleWeekDayChange = (e) => {
+    const { value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      weekDay: value
+    }));
+  };
+
+  // 处理周数多选
+  const handleWeekToggle = (week) => {
+    setFormData(prev => {
+      const { selectedWeeks } = prev;
+      if (selectedWeeks.includes(week)) {
+        // 如果已选中，则取消选中
+        return {
+          ...prev,
+          selectedWeeks: selectedWeeks.filter(w => w !== week)
+        };
+      } else {
+        // 如果未选中，则添加到选中列表
+        return {
+          ...prev,
+          selectedWeeks: [...selectedWeeks, week]
+        };
+      }
+    });
   };
 
   if (!isOpen) return null;
@@ -139,26 +186,51 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
           </select>
         </div>
 
-        {/* 日期选择 */}
+        {/* 周几选择 */}
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="date">
-            日期 *
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            周几 *
           </label>
           <select
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-            required
+            value={formData.weekDay}
+            onChange={handleWeekDayChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           >
-            <option value="">请选择日期</option>
-            {weekDays.map((day, index) => (
-              <option key={index} value={format(day, 'yyyy-MM-dd')}>
-                {format(day, 'EEEE', { locale: zhCN })} - {format(day, 'MM月dd日', { locale: zhCN })}
-              </option>
-            ))}
+            <option value="">请选择周几</option>
+            <option value="1">周一</option>
+            <option value="2">周二</option>
+            <option value="3">周三</option>
+            <option value="4">周四</option>
+            <option value="5">周五</option>
+            <option value="6">周六</option>
+            <option value="0">周日</option>
           </select>
+        </div>
+
+        {/* 第几周选择（多选） */}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            选择周数 *
+          </label>
+          <div className="grid grid-cols-10 gap-1.5 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-lg">
+            {Array.from({ length: 20 }, (_, i) => i + 1).map((week) => (
+              <button
+                key={week}
+                type="button"
+                onClick={() => handleWeekToggle(week)}
+                className={`py-2 px-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                  formData.selectedWeeks.includes(week)
+                    ? 'bg-indigo-600 text-white shadow-sm'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {week}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 text-xs text-gray-500">
+            已选择 {formData.selectedWeeks.length} 周
+          </div>
         </div>
 
         {/* 时间选择 */}
