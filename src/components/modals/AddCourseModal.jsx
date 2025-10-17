@@ -83,6 +83,12 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
       return;
     }
 
+    // 验证时间逻辑：结束时间必须晚于开始时间
+    if (formData.startTime >= formData.endTime) {
+      alert('结束时间必须晚于开始时间');
+      return;
+    }
+
     // 获取选中的课程模板
     const selectedTemplate = courseTemplates.find(template => template.id === formData.courseTemplate);
     
@@ -186,6 +192,55 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
           </select>
         </div>
 
+        {/* 时间选择 */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="startTime">
+              开始时间 *
+            </label>
+            <input
+              id="startTime"
+              name="startTime"
+              type="time"
+              value={formData.startTime}
+              onChange={handleInputChange}
+              className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="endTime">
+              结束时间 *
+            </label>
+            <input
+              id="endTime"
+              name="endTime"
+              type="time"
+              value={formData.endTime}
+              onChange={handleInputChange}
+              className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+              required
+            />
+          </div>
+        </div>
+
+        {/* 地点填写 */}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
+            地点
+          </label>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            value={formData.location}
+            onChange={handleInputChange}
+            placeholder="请输入上课地点"
+            className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+          />
+        </div>
+
         {/* 周几选择 */}
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -208,7 +263,7 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
         </div>
 
         {/* 第几周选择（多选） */}
-        <div className="mb-4">
+        <div className="mb-6">
           <label className="block text-gray-700 text-sm font-bold mb-2">
             选择周数 *
           </label>
@@ -231,67 +286,6 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
           <div className="mt-2 text-xs text-gray-500">
             已选择 {formData.selectedWeeks.length} 周
           </div>
-        </div>
-
-        {/* 时间选择 */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="startTime">
-              开始时间 *
-            </label>
-            <select
-              id="startTime"
-              name="startTime"
-              value={formData.startTime}
-              onChange={handleInputChange}
-              className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              required
-            >
-              <option value="">请选择开始时间</option>
-              {timeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="endTime">
-              结束时间 *
-            </label>
-            <select
-              id="endTime"
-              name="endTime"
-              value={formData.endTime}
-              onChange={handleInputChange}
-              className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-              required
-            >
-              <option value="">请选择结束时间</option>
-              {timeOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* 地点填写 */}
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="location">
-            地点
-          </label>
-          <input
-            id="location"
-            name="location"
-            type="text"
-            value={formData.location}
-            onChange={handleInputChange}
-            placeholder="请输入上课地点"
-            className="w-full py-2 px-3 text-gray-700 bg-white border-2 border-indigo-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-          />
         </div>
 
         {/* 按钮组 */}
