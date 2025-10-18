@@ -94,15 +94,29 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
     
     // 为每个选中的周创建课程
     const newCourses = formData.selectedWeeks.map(week => {
-      // 计算该周对应的具体日期
-      const startOfWeek = new Date(currentWeek);
-      const dayOfWeek = startOfWeek.getDay();
-      const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-      const monday = new Date(startOfWeek.setDate(diff));
+      // 获取学期设置
+      const semesterSettings = JSON.parse(localStorage.getItem('semesterSettings') || '{}');
+      
+      // 如果没有设置学期开始日期，使用当前周的周一作为基准
+      let semesterStart;
+      if (semesterSettings.startDate) {
+        semesterStart = new Date(semesterSettings.startDate);
+      } else {
+        // 如果没有设置学期开始日期，使用当前周的周一
+        const startOfWeek = new Date(currentWeek);
+        const dayOfWeek = startOfWeek.getDay();
+        const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        semesterStart = new Date(startOfWeek.setDate(diff));
+      }
+      
+      // 计算学期开始后的第一个周一
+      const dayOfWeek = semesterStart.getDay();
+      const diff = semesterStart.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+      const semesterFirstMonday = new Date(semesterStart.setDate(diff));
       
       // 计算目标周数的周一日期
-      const targetWeekMonday = new Date(monday);
-      targetWeekMonday.setDate(monday.getDate() + (week - 1) * 7);
+      const targetWeekMonday = new Date(semesterFirstMonday);
+      targetWeekMonday.setDate(semesterFirstMonday.getDate() + (week - 1) * 7);
       
       // 计算周几对应的日期
       const courseDate = new Date(targetWeekMonday);

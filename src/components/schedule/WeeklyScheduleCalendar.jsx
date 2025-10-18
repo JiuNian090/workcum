@@ -260,16 +260,24 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     // 计算持续时间（分钟）
     const durationMinutes = endMinutes - startMinutes;
     
-    // 每小时的高度（假设每个时间段为60px高）
-    const hourHeight = 60;
+    // 每小时的高度 - 从时间线元素的实际高度获取
+    // 时间线单元格高度为 py-3 + border-b，约为 48px
+    const hourHeight = 48;
     
-    // 计算位置和高度
+    // 计算位置和高度，精确到分钟
     const top = (offsetMinutes / 60) * hourHeight;
     const height = (durationMinutes / 60) * hourHeight;
     
+    // 确保最小高度，即使课程时间很短也要有足够的显示空间
+    const minHeight = 24; // 最小高度24px
+    const finalHeight = Math.max(height, minHeight);
+    
+    // 添加一些内边距，使卡片不会紧贴时间线边界
+    const padding = 2;
+    
     return {
-      top: `${top}px`,
-      height: `${height}px`
+      top: `${top + padding}px`,
+      height: `${finalHeight - padding * 2}px`
     };
   };
 
