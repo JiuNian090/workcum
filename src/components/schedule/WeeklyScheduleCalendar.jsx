@@ -147,9 +147,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     };
   }, []);
 
-  // 设置静态时间线 - 只显示小时
+  // 设置静态时间线 - 只显示小时，从8:00到22:00
   const timeSlots = [];
-  for (let hour = 8; hour <= 21; hour++) {
+  for (let hour = 8; hour <= 22; hour++) {
     const startHour = hour.toString().padStart(2, '0');
     const endHour = (hour + 1).toString().padStart(2, '0');
     
@@ -260,16 +260,15 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     // 计算持续时间（分钟）
     const durationMinutes = endMinutes - startMinutes;
     
-    // 每小时的高度 - 从时间线元素的实际高度获取
-    // 时间线单元格高度为 py-3 + border-b，约为 48px
-    const hourHeight = 48;
+    // 每小时的高度 - 缩小为32px (h-8)
+    const hourHeight = 32;
     
     // 计算位置和高度，精确到分钟
     const top = (offsetMinutes / 60) * hourHeight;
     const height = (durationMinutes / 60) * hourHeight;
     
     // 确保最小高度，即使课程时间很短也要有足够的显示空间
-    const minHeight = 24; // 最小高度24px
+    const minHeight = 20; // 最小高度20px
     const finalHeight = Math.max(height, minHeight);
     
     // 添加一些内边距，使卡片不会紧贴时间线边界
@@ -469,9 +468,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             {timeSlots.map((timeSlot) => (
               <div 
                 key={timeSlot.id}
-                className="bg-gradient-to-r from-blue-50 to-indigo-100 border-b border-gray-200 py-3 px-1 hover:from-blue-100 hover:to-indigo-200 transition-all duration-200 flex justify-center items-start shadow-sm"
+                className="bg-gradient-to-r from-blue-50 to-indigo-100 h-8 flex justify-center items-start shadow-sm"
               >
-                <div className="text-[0.6rem] text-center w-full">
+                <div className="text-xs text-center w-full">
                   <div className="text-indigo-700 font-bold">{timeSlot.start}</div>
                 </div>
               </div>
@@ -487,11 +486,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             
             return (
               <div 
-                key={dayIndex}
-                className={`border-r border-gray-200 ${dayIndex === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
-              >
+                  key={dayIndex}
+                  className={`border-r border-gray-200 ${dayIndex === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
+                >
                 {/* 显示该日期的所有日程和工时条目，不按时间段分隔 */}
-                <div className="p-2 min-h-[400px] relative">
+                <div className="relative" style={{ minHeight: `${timeSlots.length * 32}px` }}>
                   {dayCourses.length > 0 && dayCourses.map((course) => {
                     // 获取课程模板信息
                     const template = courseTemplates.find(t => t.id === course.templateId);
