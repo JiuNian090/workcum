@@ -116,7 +116,8 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
         date: format(courseDate, 'yyyy-MM-dd'),
         startTime: formData.startTime,
         endTime: formData.endTime,
-        location: formData.location
+        location: formData.location,
+        weekNumber: week // 添加周数信息
       };
     });
 

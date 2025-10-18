@@ -242,6 +242,37 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     }
   };
 
+  // 计算课程卡片在时间线上的位置和高度
+  const calculateCoursePosition = (startTime, endTime) => {
+    // 将时间字符串转换为分钟数
+    const timeToMinutes = (timeStr) => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
+    };
+    
+    const startMinutes = timeToMinutes(startTime);
+    const endMinutes = timeToMinutes(endTime);
+    
+    // 计算相对于8:00的偏移量（分钟）
+    const dayStartMinutes = 8 * 60; // 8:00 AM
+    const offsetMinutes = startMinutes - dayStartMinutes;
+    
+    // 计算持续时间（分钟）
+    const durationMinutes = endMinutes - startMinutes;
+    
+    // 每小时的高度（假设每个时间段为60px高）
+    const hourHeight = 60;
+    
+    // 计算位置和高度
+    const top = (offsetMinutes / 60) * hourHeight;
+    const height = (durationMinutes / 60) * hourHeight;
+    
+    return {
+      top: `${top}px`,
+      height: `${height}px`
+    };
+  };
+
   // 获取指定时间段的课程
   const getScheduleForTimeSlot = (date, timeSlot) => {
     const dateStr = format(date, 'yyyy-MM-dd');
@@ -346,10 +377,36 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     );
   };
 
+  // 计算当前显示的周数（相对于学期开始）
+  const getCurrentDisplayWeek = () => {
+    const semesterSettings = JSON.parse(localStorage.getItem('semesterSettings') || '{}');
+    
+    if (!semesterSettings.startDate) {
+      return 0;
+    }
+    
+    const startDate = new Date(semesterSettings.startDate);
+    const currentWeekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+    
+    // 计算从学期开始到当前显示周开始的天数
+    const timeDiff = currentWeekStart.getTime() - startDate.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    // 计算周数（向上取整，从1开始）
+    const weekNumber = Math.ceil(daysDiff / 7) + 1;
+    
+    // 确保周数在合理范围内
+    return Math.max(1, Math.min(weekNumber, 20));
+  };
+
+  // 获取指定日期的课程，只显示当前周的课程
   const getCoursesForDate = (date) => {
-    return courses.filter(course => 
-      isSameDay(new Date(course.date), date)
-    );
+    const currentDisplayWeek = getCurrentDisplayWeek();
+    return courses.filter(course => {
+      const courseDate = new Date(course.date);
+      // 检查日期是否匹配，并且周数是否匹配当前显示的周数
+      return isSameDay(courseDate, date) && course.weekNumber === currentDisplayWeek;
+    });
   };
 
   const formatTime = (time) => {
@@ -426,7 +483,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 className={`border-r border-gray-200 ${dayIndex === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
               >
                 {/* 显示该日期的所有日程和工时条目，不按时间段分隔 */}
-                <div className="p-2 min-h-[400px]">
+                <div className="p-2 min-h-[400px] relative">
                   {dayCourses.length > 0 && dayCourses.map((course) => {
                     // 获取课程模板信息
                     const template = courseTemplates.find(t => t.id === course.templateId);
@@ -436,14 +493,20 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                       ? `hsl(${template.customHue}, 70%, 50%)` 
                       : course.color || '#3B82F6';
                     
+                    // 计算课程卡片的位置和高度
+                    const position = calculateCoursePosition(course.startTime, course.endTime);
+                    
                     return (
                       <div 
                         key={course.id} 
-                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.6rem] mb-2"
+                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.6rem] absolute left-2 right-2"
                         style={{ 
                           backgroundColor: courseColor + '20',
                           border: `1px solid ${courseColor}`,
-                          borderLeft: `3px solid ${courseColor}`
+                          borderLeft: `3px solid ${courseColor}`,
+                          top: position.top,
+                          height: position.height,
+                          zIndex: 10
                         }}
                       >
                         <h3 
