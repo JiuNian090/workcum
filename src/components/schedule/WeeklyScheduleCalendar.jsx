@@ -494,7 +494,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 key={timeSlot.id}
                 className="h-12 flex justify-center items-start"
               >
-                <div className="text-[0.6rem] text-center w-full">
+                <div className="text-[0.6rem] text-center w-full flex items-center justify-center">
                   <div className="text-black font-bold">{timeSlot.start}</div>
                 </div>
               </div>
