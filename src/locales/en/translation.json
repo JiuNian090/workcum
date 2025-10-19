@@ -123,7 +123,7 @@
       "cancel": "Cancel",
       "edit": "Edit",
       "delete": "Delete",
-      "no_shifts": "No custom courses available",
+      "no_shifts": "No custom courses",
       "no_shifts_description": "Click the button above to add your first custom course template for quick study time recording.",
       "select_shift": "Select Course Template",
       "select_placeholder": "Select a course template",

@@ -173,7 +173,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
       setCustomHue(180); // 重置为默认值（青色）
         }}
         size="md"
-        title={editingShift ? `${t('time_entry.custom_shift.edit_shift')} - ${editingShift.name}` : t('time_entry.custom_shift.add_shift')}
+        title={editingShift ? `${t('time_entry.custom_shift.edit')}课程 - ${editingShift.name}` : t('time_entry.custom_shift.add_shift')}
       >
         <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-4">
           <div className="mb-2 sm:mb-3">
