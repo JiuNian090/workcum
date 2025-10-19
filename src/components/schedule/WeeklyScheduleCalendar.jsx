@@ -874,11 +874,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
               <button
                 type="button"
                 onClick={() => {
-                  setShowEditCourseModal(false);
-                  // 延迟显示编辑课程模态框，确保状态正确更新
-                  setTimeout(() => {
-                    setShowEditCourseModal(true);
-                  }, 10);
+                  // 直接显示编辑课程模态框，避免不必要的状态切换
+                  setShowEditCourseModal(true);
                 }}
                 className="flex-1 px-5 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:scale-105"
               >
