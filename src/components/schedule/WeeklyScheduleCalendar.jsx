@@ -450,7 +450,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       {/* Table-based weekly calendar */}
       <div className="border border-gray-200 rounded-lg overflow-hidden w-full">
         {/* Header row with dates only */}
-        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1fr)' }}>
+        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1.2fr)' }}>
           {/* Empty cell for time column */}
           <div className="bg-gray-100 border-b border-r border-gray-200 p-1 relative">
             <div className="text-xs font-bold text-center h-full">
@@ -486,7 +486,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         </div>
         
         {/* Day columns - 每个日期一列，不显示横向时间段格子 */}
-        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1fr)' }}>
+        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1.2fr)' }}>
           {/* Time slot column - 时间线样式 */}
           <div className="border-r border-gray-200">
             {timeSlots.map((timeSlot) => (
