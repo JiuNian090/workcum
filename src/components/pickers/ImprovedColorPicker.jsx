@@ -91,19 +91,19 @@ const ImprovedColorPicker = ({ selectedColor, onColorChange }) => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {/* 滑块拇指 - 在移动端更明显 */}
+            {/* 隐藏滑块拇指 */}
             <div
               ref={thumbRef}
-              className="absolute top-1/2 w-6 h-6 bg-white rounded-full shadow-lg border-2 border-gray-300 transform -translate-y-1/2 z-20 transition-all duration-150 ease-out"
+              className="absolute top-1/2 w-4 h-6 bg-white shadow-md border border-gray-300 transform -translate-y-1/2 z-20 transition-all duration-150 ease-out hidden"
               style={{
                 left: calculateThumbPosition(),
                 borderColor: getColorValue(selectedColor),
-                boxShadow: `0 0 0 2px ${getColorValue(selectedColor)}, 0 4px 8px rgba(0,0,0,0.2)`,
+                boxShadow: `0 0 0 1px ${getColorValue(selectedColor)}, 0 2px 4px rgba(0,0,0,0.2)`,
               }}
             >
               {/* 内部颜色指示器 */}
               <div 
-                className="absolute inset-1 rounded-full"
+                className="absolute inset-0"
                 style={{ backgroundColor: getColorValue(selectedColor) }}
               ></div>
             </div>
