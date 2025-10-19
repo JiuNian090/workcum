@@ -79,8 +79,8 @@
   "project": {
     "title": "Project Introduction",
     "introduction": {
-      "part1": "This is an efficient tool designed specifically for work time management, aimed at helping users easily track and manage work hours. The project was initially created for my wife, Sisi, as a convenient tool for calculating work hours, and has now developed into a complete time tracking system.",
-      "part2": "If you have better suggestions or feedback, you can click to contact Lele."
+      "part1": "This is a web-based class schedule based on SYwork, customized for Tiantian, aimed at helping Tiantian manage her class schedule more conveniently. Users can search for 'SY Work Time Tracker' on WeChat to use the work time tracking and scheduling management system for free.",
+      "part2": "If you have better suggestions or feedback, you can click to contact LeLe."
     },
     "features": {
       "title": "Main Features",
@@ -90,7 +90,7 @@
       "item4": "Visual report analysis"
     },
     "support": {
-      "text": "If you'd like to thank the author, you can buy Sisi a cup of milk tea, or you can tip the author in the GitHub repository. You can also click to donate support for public welfare contributions.",
+      "text": "If you'd like to thank the author, you can buy Tiantian a cup of milk tea, or you can tip the author in the GitHub repository. You can also click to donate support for public welfare contributions.",
       "github": "GitHub Repository",
       "contact": "Contact Lele",
       "donate": "Donate Support"
