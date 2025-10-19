@@ -450,15 +450,15 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       {/* Table-based weekly calendar */}
       <div className="border border-gray-200 rounded-lg overflow-hidden w-full">
         {/* Header row with dates only */}
-        <div className="grid" style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}>
+        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1fr)' }}>
           {/* Empty cell for time column */}
           <div className="bg-gray-100 border-b border-r border-gray-200 p-1 relative">
             <div className="text-xs font-bold text-center h-full">
               {inSemester && currentSemesterWeek > 0 ? (
                 <div className="relative h-8 w-full">
-                  <span className="absolute top-0 left-0 text-black font-bold text-[8px]">第</span>
+                  <span className="absolute top-0 left-0 text-black font-bold text-[8px]" style={{ transform: 'translate(-2px, -2px)' }}>第</span>
                   <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold">{currentSemesterWeek}</span>
-                  <span className="absolute bottom-0 right-0 text-black font-bold text-[8px]">周</span>
+                  <span className="absolute bottom-0 right-0 text-black font-bold text-[8px]" style={{ transform: 'translate(2px, 2px)' }}>周</span>
                 </div>
               ) : (
                 <span>时间</span>
@@ -486,7 +486,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         </div>
         
         {/* Day columns - 每个日期一列，不显示横向时间段格子 */}
-        <div className="grid" style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}>
+        <div className="grid" style={{ gridTemplateColumns: '30px repeat(7, 1fr)' }}>
           {/* Time slot column - 时间线样式 */}
           <div className="border-r border-gray-200">
             {timeSlots.map((timeSlot) => (
