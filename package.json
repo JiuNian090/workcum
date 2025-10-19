@@ -22,7 +22,6 @@
     "react-i18next": "^15.7.3",
     "react-router-dom": "^6.8.0",
     "tailwindcss-animate": "^1.0.7",
-    "weixin-js-sdk": "^1.6.5",
     "xlsx": "^0.18.5",
     "xlsx-js-style": "^1.2.0"
   },
