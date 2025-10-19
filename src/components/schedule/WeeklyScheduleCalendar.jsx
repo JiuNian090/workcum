@@ -20,8 +20,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const { t } = useTranslation();
   const [schedules, setSchedules] = useState([]);
   const [timeEntries, setTimeEntries] = useState([]);
-  const [shifts, setShifts] = useState([]); // Add shifts state
-  const [courses, setCourses] = useState([]); // Add courses state
+  const [shifts, setShifts] = useState([]); // Add courses state
+  const [courses, setCourses] = useState([]);
+  // 添加选中的课程状态和删除确认弹窗状态
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false); // Add courses state
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -239,6 +242,27 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     if (window.confirm(t('time_entry.delete_confirm') || '确定要删除这个时间记录吗？')) {
       setTimeEntries(timeEntries.filter(entry => entry.id !== id));
       setShowDeleteModal(false); // 添加这行代码来关闭模态框
+    }
+  };
+
+  // 删除课程的函数
+  const handleDeleteCourse = (courseToDelete) => {
+    if (window.confirm(`确定要删除第${courseToDelete.weekNumber}周的课程吗？`)) {
+      // 从课程列表中移除指定周数的课程
+      const updatedCourses = courses.filter(course => 
+        !(course.templateId === courseToDelete.templateId && 
+          course.weekNumber === courseToDelete.weekNumber &&
+          course.date === courseToDelete.date &&
+          course.startTime === courseToDelete.startTime &&
+          course.endTime === courseToDelete.endTime)
+      );
+      setCourses(updatedCourses);
+      // 更新localStorage中的课程数据
+      localStorage.setItem('courses', JSON.stringify(updatedCourses));
+      // 关闭删除确认弹窗
+      setShowDeleteCourseModal(false);
+      // 清空选中的课程
+      setSelectedCourse(null);
     }
   };
 
@@ -506,7 +530,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                     return (
                       <div 
                         key={course.id} 
-                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.6rem] absolute left-2 right-2"
+                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.7rem] absolute left-2 right-2 flex flex-col justify-center cursor-pointer"
                         style={{ 
                           backgroundColor: courseColor + '20',
                           border: `1px solid ${courseColor}`,
@@ -515,6 +539,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                           height: position.height,
                           zIndex: 10
                         }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCourse(course);
+                          setShowDeleteCourseModal(true);
+                        }}
                       >
                         <h3 
                           className="font-bold leading-tight truncate"
@@ -522,14 +551,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         >
                           {courseName}
                         </h3>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-gray-600">
-                            {formatTime(course.startTime)} - {formatTime(course.endTime)}
-                          </span>
-                        </div>
                         {course.location && (
-                          <div className="text-xs text-gray-500 mt-1 truncate">
-                            📍 {course.location}
+                          <div className="text-xs text-gray-600 mt-1 truncate flex items-center">
+                            <span className="mr-1">📍</span>
+                            <span className="truncate">{course.location}</span>
                           </div>
                         )}
                       </div>
@@ -746,6 +771,68 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 onClick={() => {
                   handleDeleteTimeEntry(selectedEntry.id);
                   setShowDeleteModal(false);
+                }}
+                className="px-5 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:scale-105"
+              >
+                {t('schedule.form.delete')}
+              </button>
+            </div>
+          </Modal>
+        )}
+        
+        {/* 删除课程确认弹窗 */}
+        {showDeleteCourseModal && (
+          <Modal
+            isOpen={showDeleteCourseModal}
+            onClose={() => {
+              setShowDeleteCourseModal(false);
+              setSelectedCourse(null);
+            }}
+            title="删除课程"
+            size="sm"
+          >
+            <div className="mb-6">
+              <p className="text-gray-700 text-center mb-4">
+                确定要删除这个课程吗？
+              </p>
+              {selectedCourse && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                  <div className="font-bold truncate text-gray-800">
+                    {courseTemplates.find(t => t.id === selectedCourse.templateId)?.name || selectedCourse.name}
+                  </div>
+                  <div className="text-blue-700 text-sm mt-2 flex flex-wrap items-center">
+                    <span className="mr-3">
+                      {formatTime(selectedCourse.startTime)} - {formatTime(selectedCourse.endTime)}
+                    </span>
+                    <span className="bg-white bg-opacity-70 px-2 py-1 rounded-lg font-bold">
+                      第{selectedCourse.weekNumber}周
+                    </span>
+                  </div>
+                  {selectedCourse.location && (
+                    <div className="text-gray-600 text-sm mt-1 flex items-center">
+                      <span className="mr-1">📍</span>
+                      <span className="truncate">{selectedCourse.location}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteCourseModal(false);
+                  setSelectedCourse(null);
+                }}
+                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                {t('schedule.form.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleDeleteCourse(selectedCourse);
                 }}
                 className="px-5 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:scale-105"
               >
