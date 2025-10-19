@@ -246,7 +246,8 @@
       "notes_placeholder": "详细信息...",
       "delete": "删除",
       "cancel": "取消",
-      "save": "保存"
+      "save": "保存",
+      "edit": "编辑"
     },
     "no_events": "暂无课表",
     "unique_schedule_warning": "该日期已有课表任务，每个日期只能添加一个课表任务。",

@@ -211,7 +211,8 @@
       "name": "Shift Name",
       "custom_hours": "Custom Hours",
       "time_period": "Time Period",
-      "shift_type": "Course Type"
+      "shift_type": "Course Type",
+      "edit": "Edit"
     },
     "select_placeholder": "Select a course template",
     "select_shift_help": "Please select a course template to quickly populate record information",

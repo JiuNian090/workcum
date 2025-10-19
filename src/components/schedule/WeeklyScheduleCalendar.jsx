@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { getShiftColor, getShiftBackgroundColor, getShiftTypeBackgroundColor } from '@/utils/shiftColor.js'; // 导入颜色工具函数
 import { getEntryColor } from '@/utils/entryColor.js'; // 导入时间记录颜色工具函数
 import Modal from '../modals/Modal.jsx'; // 导入统一的Modal组件
+import EditCourseModal from '../modals/EditCourseModal.jsx'; // 导入编辑课程模态框
 import { useSwipeSelection } from '@/hooks/useSwipeSelection'; // 导入滑动选择hook
 import { getCurrentWeekNumber, isInSemester } from '@/utils/semesterUtils'; // 导入学期工具函数
 
@@ -24,7 +25,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   const [courses, setCourses] = useState([]);
   // 添加选中的课程状态和删除确认弹窗状态
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false); // Add courses state
+  const [showDeleteCourseModal, setShowDeleteCourseModal] = useState(false);
+  const [showEditCourseModal, setShowEditCourseModal] = useState(false); // Add edit course modal state
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -264,6 +266,30 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       // 清空选中的课程
       setSelectedCourse(null);
     }
+  };
+
+  // 编辑课程的函数
+  const handleEditCourse = (updatedCourses, originalCourse) => {
+    // 从课程列表中移除原始课程
+    const filteredCourses = courses.filter(course => 
+      !(course.templateId === originalCourse.templateId && 
+        course.weekNumber === originalCourse.weekNumber &&
+        course.date === originalCourse.date &&
+        course.startTime === originalCourse.startTime &&
+        course.endTime === originalCourse.endTime)
+    );
+    
+    // 添加更新后的课程
+    const newCourses = [...filteredCourses, ...updatedCourses];
+    
+    setCourses(newCourses);
+    // 更新localStorage中的课程数据
+    localStorage.setItem('courses', JSON.stringify(newCourses));
+    
+    // 关闭编辑模态框
+    setShowEditCourseModal(false);
+    // 清空选中的课程
+    setSelectedCourse(null);
   };
 
   // 计算课程卡片在时间线上的位置和高度
@@ -541,7 +567,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCourse(course);
-                          setShowDeleteCourseModal(true);
+                          // 显示编辑/删除选项弹窗
+                          setShowEditCourseModal(true);
                         }}
                       >
                         <h3 
@@ -778,6 +805,82 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
           </Modal>
         )}
         
+        {/* 编辑/删除课程选项弹窗 */}
+        {showEditCourseModal && (
+          <Modal
+            isOpen={showEditCourseModal}
+            onClose={() => {
+              setShowEditCourseModal(false);
+              setSelectedCourse(null);
+            }}
+            title="课程操作"
+            size="sm"
+          >
+            <div className="mb-6">
+              <p className="text-gray-700 text-center mb-4">
+                请选择要执行的操作
+              </p>
+              {selectedCourse && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                  <div className="font-bold truncate text-gray-800">
+                    {courseTemplates.find(t => t.id === selectedCourse.templateId)?.name || selectedCourse.name}
+                  </div>
+                  <div className="text-blue-700 text-sm mt-2 flex flex-wrap items-center">
+                    <span className="mr-3">
+                      {formatTime(selectedCourse.startTime)} - {formatTime(selectedCourse.endTime)}
+                    </span>
+                    <span className="bg-white bg-opacity-70 px-2 py-1 rounded-lg font-bold">
+                      第{selectedCourse.weekNumber}周
+                    </span>
+                  </div>
+                  {selectedCourse.location && (
+                    <div className="text-gray-600 text-sm mt-1 flex items-center">
+                      <span className="mr-1">📍</span>
+                      <span className="truncate">{selectedCourse.location}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t border-gray-100 space-x-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditCourseModal(false);
+                  setSelectedCourse(null);
+                }}
+                className="flex-1 px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                {t('schedule.form.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditCourseModal(false);
+                  setShowDeleteCourseModal(true);
+                }}
+                className="flex-1 px-5 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:scale-105"
+              >
+                {t('schedule.form.delete')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEditCourseModal(false);
+                  // 延迟显示编辑课程模态框，确保状态正确更新
+                  setTimeout(() => {
+                    setShowEditCourseModal(true);
+                  }, 10);
+                }}
+                className="flex-1 px-5 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:scale-105"
+              >
+                {t('schedule.form.edit')}
+              </button>
+            </div>
+          </Modal>
+        )}
+
         {/* 删除课程确认弹窗 */}
         {showDeleteCourseModal && (
           <Modal
@@ -838,6 +941,21 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
               </button>
             </div>
           </Modal>
+        )}
+
+        {/* 编辑课程模态框 */}
+        {showEditCourseModal && selectedCourse && (
+          <EditCourseModal
+            isOpen={showEditCourseModal}
+            onClose={() => {
+              setShowEditCourseModal(false);
+              setSelectedCourse(null);
+            }}
+            course={selectedCourse}
+            courseTemplates={courseTemplates}
+            currentWeek={currentDate}
+            onEditCourse={handleEditCourse}
+          />
         )}
       {showReplaceModal && (
         <Modal
