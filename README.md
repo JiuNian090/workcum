@@ -1,5 +1,4 @@
-# SYwork - 工时记录排班系统
-
+# SYstudy 课程表
 <p align="center">
   <img src="public/calendar-icon-192.png" alt="Logo" width="100" height="100">
 </p>

@@ -19,8 +19,8 @@ export default defineConfig({
         type: 'module'
       },
       manifest: {
-        name: 'SYwork',
-        short_name: 'SYwork',
+        name: 'SYstudy',
+        short_name: 'SYstudy',
         description: 'A simple time tracking and scheduling application',
         start_url: '/',
         display: 'standalone',
