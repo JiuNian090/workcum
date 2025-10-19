@@ -530,7 +530,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                     return (
                       <div 
                         key={course.id} 
-                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.7rem] absolute left-2 right-2 flex flex-col justify-center cursor-pointer"
+                        className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-0.5 text-[0.7rem] absolute left-0.5 right-0.5 flex flex-col justify-start cursor-pointer"
                         style={{ 
                           backgroundColor: courseColor,
                           border: `1px solid ${courseColor}`,
@@ -545,13 +545,13 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         }}
                       >
                         <h3 
-                          className="font-bold leading-tight truncate"
+                          className="font-bold leading-tight text-[0.6rem] break-words"
                           style={{ color: 'white' }}
                         >
                           {courseName}
                         </h3>
                         {course.location && (
-                          <div className="text-xs text-white text-opacity-90 mt-1 truncate flex items-center">
+                          <div className="text-[0.5rem] text-white text-opacity-90 mt-1 truncate flex items-center">
                             <span className="mr-1">📍</span>
                             <span className="truncate">{course.location}</span>
                           </div>
@@ -583,7 +583,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         }}
                       >
                         <h3 
-                          className="font-bold leading-tight truncate"
+                          className="font-bold leading-tight"
                           style={{ color: getShiftColor(shiftType, customHue) }}
                         >
                           {shiftName}
