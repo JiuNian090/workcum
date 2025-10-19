@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getShiftColor, getShiftBackgroundColor } from '@/utils/shiftColor.js';
 import Modal from '../modals/Modal';
-import ColorPicker from '../pickers/ColorPicker'; // 导入颜色选择器组件
+import ImprovedColorPicker from '../pickers/ImprovedColorPicker'; // 导入优化后的颜色选择器组件
 import SemesterSettingsModal from '../modals/SemesterSettingsModal'; // 导入学期设置模态框组件
 
 const CustomShiftManager = ({ scrollToEditSection }) => {
@@ -198,7 +198,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
           {/* 移除班次类型选择选项 */}
           
           {/* 颜色选择器 */}
-          <ColorPicker 
+          <ImprovedColorPicker 
             selectedColor={customHue} 
             onColorChange={setCustomHue} 
           />
