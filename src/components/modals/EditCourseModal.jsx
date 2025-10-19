@@ -290,7 +290,7 @@ const EditCourseModal = ({ isOpen, onClose, course, courseTemplates, currentWeek
             }}
             className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-lg shadow-md transition-all duration-200 transform hover:scale-105"
           >
-            删除课程
+            删除
           </button>
           <div className="flex space-x-3">
             <button
