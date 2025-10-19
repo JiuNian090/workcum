@@ -248,7 +248,7 @@ const DataPage = () => {
           
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <a 
-              href="/小程序.jpg" 
+              href="https://github.com/JiuNian090/workcum/blob/main/public/%E5%B0%8F%E7%A8%8B%E5%BA%8F.jpg" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-medium text-sm shadow-md hover:shadow-lg"
