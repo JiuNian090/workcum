@@ -456,9 +456,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             <div className="text-xs font-bold text-center h-full">
               {inSemester && currentSemesterWeek > 0 ? (
                 <div className="relative h-8 w-full">
-                  <span className="absolute top-0 left-0 text-indigo-600 font-bold text-[8px]">第</span>
-                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-indigo-600 font-bold">{currentSemesterWeek}</span>
-                  <span className="absolute bottom-0 right-0 text-indigo-600 font-bold text-[8px]">周</span>
+                  <span className="absolute top-0 left-0 text-black font-bold text-[8px]">第</span>
+                  <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold">{currentSemesterWeek}</span>
+                  <span className="absolute bottom-0 right-0 text-black font-bold text-[8px]">周</span>
                 </div>
               ) : (
                 <span>时间</span>
@@ -474,10 +474,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                 key={index} 
                 className={`bg-gray-100 p-1 border-b border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-100' : ''}`}
               >
-                <div className="text-sm sm:text-base font-bold text-center text-indigo-700">
+                <div className="text-sm sm:text-base font-bold text-center text-black">
                   {format(day, 'EEE', { locale: zhCN })}
                 </div>
-                <div className="text-xs sm:text-sm text-center text-gray-600">
+                <div className="text-xs sm:text-sm text-center text-black">
                   {format(day, 'd', { locale: zhCN })}
                 </div>
               </div>
@@ -492,10 +492,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             {timeSlots.map((timeSlot) => (
               <div 
                 key={timeSlot.id}
-                className="bg-gradient-to-r from-blue-50 to-indigo-100 h-12 flex justify-center items-start shadow-sm"
+                className="h-12 flex justify-center items-start"
               >
-                <div className="text-xs text-center w-full">
-                  <div className="text-indigo-700 font-bold">{timeSlot.start}</div>
+                <div className="text-[0.6rem] text-center w-full">
+                  <div className="text-black font-bold">{timeSlot.start}</div>
                 </div>
               </div>
             ))}
