@@ -284,19 +284,19 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     // 计算持续时间（分钟）
     const durationMinutes = endMinutes - startMinutes;
     
-    // 每小时的高度 - 缩小为32px (h-8)
-    const hourHeight = 32;
+    // 每小时的高度 - 增加为48px (h-12)
+    const hourHeight = 48;
     
     // 计算位置和高度，精确到分钟
     const top = (offsetMinutes / 60) * hourHeight;
     const height = (durationMinutes / 60) * hourHeight;
     
     // 确保最小高度，即使课程时间很短也要有足够的显示空间
-    const minHeight = 20; // 最小高度20px
+    const minHeight = 30; // 最小高度30px
     const finalHeight = Math.max(height, minHeight);
     
     // 添加一些内边距，使卡片不会紧贴时间线边界
-    const padding = 2;
+    const padding = 3;
     
     return {
       top: `${top + padding}px`,
@@ -492,7 +492,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             {timeSlots.map((timeSlot) => (
               <div 
                 key={timeSlot.id}
-                className="bg-gradient-to-r from-blue-50 to-indigo-100 h-8 flex justify-center items-start shadow-sm"
+                className="bg-gradient-to-r from-blue-50 to-indigo-100 h-12 flex justify-center items-start shadow-sm"
               >
                 <div className="text-xs text-center w-full">
                   <div className="text-indigo-700 font-bold">{timeSlot.start}</div>
@@ -514,7 +514,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                   className={`border-r border-gray-200 ${dayIndex === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
                 >
                 {/* 显示该日期的所有日程和工时条目，不按时间段分隔 */}
-                <div className="relative" style={{ minHeight: `${timeSlots.length * 32}px` }}>
+                <div className="relative" style={{ minHeight: `${timeSlots.length * 48}px` }}>
                   {dayCourses.length > 0 && dayCourses.map((course) => {
                     // 获取课程模板信息
                     const template = courseTemplates.find(t => t.id === course.templateId);
