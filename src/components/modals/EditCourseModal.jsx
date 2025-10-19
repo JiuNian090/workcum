@@ -3,7 +3,7 @@ import { format, addDays } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import Modal from './Modal.jsx';
 
-const EditCourseModal = ({ isOpen, onClose, course, courseTemplates, currentWeek, onEditCourse }) => {
+const EditCourseModal = ({ isOpen, onClose, course, courseTemplates, currentWeek, onEditCourse, onDeleteCourse }) => {
   const [formData, setFormData] = useState({
     courseTemplate: '',
     weekDay: '',
@@ -279,20 +279,34 @@ const EditCourseModal = ({ isOpen, onClose, course, courseTemplates, currentWeek
         </div>
 
         {/* 按钮组 */}
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
           <button
             type="button"
-            onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all duration-200"
+            onClick={() => {
+              if (onDeleteCourse) {
+                onDeleteCourse(course);
+              }
+              onClose();
+            }}
+            className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-medium rounded-lg shadow-md transition-all duration-200 transform hover:scale-105"
           >
-            取消
+            删除课程
           </button>
-          <button
-            type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200"
-          >
-            保存更改
-          </button>
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg transition-all duration-200"
+            >
+              取消
+            </button>
+            <button
+              type="submit"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200"
+            >
+              保存更改
+            </button>
+          </div>
         </div>
       </form>
     </Modal>
