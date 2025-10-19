@@ -551,8 +551,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                           {courseName}
                         </h3>
                         {course.location && (
-                          <div className="text-[0.5rem] text-white text-opacity-90 mt-1 truncate flex items-center">
-                            <span className="mr-1">📍</span>
+                          <div className="text-[0.5rem] text-white text-opacity-90 mt-1 break-words">
                             <span className="truncate">{course.location}</span>
                           </div>
                         )}
