@@ -74,7 +74,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     setTimeEntries(savedEntries);
   }, []);
 
-  // 添加一个useEffect来监听localStorage的变化
+  // 添加一个useEffect来监听localStorage的变化和自定义事件
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'timeEntries') {
@@ -96,11 +96,18 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       }
     };
 
+    // 监听自定义的coursesUpdated事件
+    const handleCoursesUpdated = (e) => {
+      setCourses(e.detail);
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('coursesUpdated', handleCoursesUpdated);
     
     // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('coursesUpdated', handleCoursesUpdated);
     };
   }, []);
 

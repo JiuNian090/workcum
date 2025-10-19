@@ -63,6 +63,10 @@ const SchedulePage = () => {
     // 保存到localStorage
     localStorage.setItem('courses', JSON.stringify(existingCourses));
     
+    // 创建自定义事件通知课程更新
+    const event = new CustomEvent('coursesUpdated', { detail: existingCourses });
+    window.dispatchEvent(event);
+    
     // 这里可以添加其他逻辑，比如刷新课表显示
     console.log('课程已添加:', coursesToAdd);
   };
