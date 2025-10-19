@@ -472,7 +472,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             return (
               <div 
                 key={index} 
-                className={`bg-gray-100 p-1 border-b border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-100 text-blue-600' : ''}`}
+                className={`bg-gray-100 p-1 border-b border-r border-gray-200 ${index === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-100' : ''}`}
               >
                 <div className="text-sm sm:text-base font-bold text-center text-indigo-700">
                   {format(day, 'EEE', { locale: zhCN })}
@@ -532,9 +532,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                         key={course.id} 
                         className="rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:shadow p-2 text-[0.7rem] absolute left-2 right-2 flex flex-col justify-center cursor-pointer"
                         style={{ 
-                          backgroundColor: courseColor + '20',
+                          backgroundColor: courseColor,
                           border: `1px solid ${courseColor}`,
-                          borderLeft: `3px solid ${courseColor}`,
                           top: position.top,
                           height: position.height,
                           zIndex: 10
@@ -547,12 +546,12 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                       >
                         <h3 
                           className="font-bold leading-tight truncate"
-                          style={{ color: courseColor }}
+                          style={{ color: 'white' }}
                         >
                           {courseName}
                         </h3>
                         {course.location && (
-                          <div className="text-xs text-gray-600 mt-1 truncate flex items-center">
+                          <div className="text-xs text-white text-opacity-90 mt-1 truncate flex items-center">
                             <span className="mr-1">📍</span>
                             <span className="truncate">{course.location}</span>
                           </div>
