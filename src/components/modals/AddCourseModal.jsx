@@ -89,6 +89,24 @@ const AddCourseModal = ({ isOpen, onClose, currentWeek, onAddCourse }) => {
       return;
     }
 
+    // 验证时间是否在允许的范围内（8:00-22:00）
+    const [startHour, startMinute] = formData.startTime.split(':').map(Number);
+    const [endHour, endMinute] = formData.endTime.split(':').map(Number);
+    const startTimeInMinutes = startHour * 60 + startMinute;
+    const endTimeInMinutes = endHour * 60 + endMinute;
+    const minTimeInMinutes = 8 * 60; // 8:00
+    const maxTimeInMinutes = 22 * 60; // 22:00
+
+    if (startTimeInMinutes < minTimeInMinutes || startTimeInMinutes > maxTimeInMinutes) {
+      alert('开始时间必须在8:00-22:00之间');
+      return;
+    }
+
+    if (endTimeInMinutes < minTimeInMinutes || endTimeInMinutes > maxTimeInMinutes) {
+      alert('结束时间必须在8:00-22:00之间');
+      return;
+    }
+
     // 获取选中的课程模板
     const selectedTemplate = courseTemplates.find(template => template.id === formData.courseTemplate);
     
