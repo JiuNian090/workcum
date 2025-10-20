@@ -347,8 +347,8 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     // 计算持续时间（分钟）
     const durationMinutes = endMinutes - startMinutes;
     
-    // 每小时的高度 - 减小为36px (h-9)
-    const hourHeight = 36;
+    // 每小时的高度 - 增加为48px (h-12)
+    const hourHeight = 48;
     
     // 计算位置和高度，精确到分钟
     const top = (offsetMinutes / 60) * hourHeight;
@@ -555,7 +555,7 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
             {timeSlots.map((timeSlot) => (
               <div 
                 key={timeSlot.id}
-                className="h-9 flex justify-center items-start"
+                className="h-12 flex justify-center items-start"
               >
                 <div className="text-[0.6rem] text-center w-full flex items-center justify-center">
                   <div className="text-black font-bold">{timeSlot.start}</div>
@@ -577,7 +577,10 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
                   className={`border-r border-gray-200 ${dayIndex === weekDays.length - 1 ? 'border-r-0' : ''} ${isToday ? 'bg-blue-50' : ''}`}
                 >
                 {/* 显示该日期的所有日程和工时条目，不按时间段分隔 */}
-                <div className="relative" style={{ minHeight: `${timeSlots.length * 36}px` }}>
+                <div 
+                  className="flex-1 border-r last:border-r-0 min-h-screen"
+                  style={{ minHeight: `${timeSlots.length * 48}px` }}
+                >
                   {dayCourses.length > 0 && dayCourses.map((course) => {
                     // 获取课程模板信息
                     const template = courseTemplates.find(t => t.id === course.templateId);
