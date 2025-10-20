@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { getShiftColor, getShiftBackgroundColor } from '@/utils/shiftColor.js';
 import Modal from '../modals/Modal';
 import ImprovedColorPicker from '../pickers/ImprovedColorPicker'; // 导入优化后的颜色选择器组件
-import SemesterSettingsModal from '../modals/SemesterSettingsModal'; // 导入学期设置模态框组件
+import TimeSettingsModal from '../modals/TimeSettingsModal'; // 导入新的时间设置模态框组件
 
 const CustomShiftManager = ({ scrollToEditSection }) => {
   const { t } = useTranslation();
@@ -12,7 +12,7 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
   const [editingShift, setEditingShift] = useState(null);
   const [shiftName, setShiftName] = useState('');
   const [customHue, setCustomHue] = useState(180); // 添加自定义色调状态，默认为青色
-  const [showSemesterSettings, setShowSemesterSettings] = useState(false); // 学期设置模态框状态
+  const [showTimeSettings, setShowTimeSettings] = useState(false); // 时间设置模态框状态
   
   // Drag and drop sorting related state
   const [draggedItem, setDraggedItem] = useState(null);
@@ -130,6 +130,17 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
     setDraggedOver(null);
   };
 
+  // 空的时间槽配置，用于传递给TimeSettingsModal
+  const timeSlotConfig = {
+    start: '08:00',
+    end: '22:00'
+  };
+
+  // 空的保存时间槽配置函数，用于传递给TimeSettingsModal
+  const handleSaveTimeSlot = () => {
+    // 实际的保存逻辑在TimeSettingsModal内部处理
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-2 sm:p-4 md:p-6 w-full">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
@@ -142,9 +153,9 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setShowSemesterSettings(true)}
+              onClick={() => setShowTimeSettings(true)}
               className="flex items-center justify-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-3 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 text-sm whitespace-nowrap"
-              title="学期设置"
+              title="时间设置"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -308,10 +319,12 @@ const CustomShiftManager = ({ scrollToEditSection }) => {
         </div>
       )}
       
-      {/* 学期设置模态框 */}
-      <SemesterSettingsModal 
-        isOpen={showSemesterSettings} 
-        onClose={() => setShowSemesterSettings(false)} 
+      {/* 时间设置模态框 */}
+      <TimeSettingsModal 
+        isOpen={showTimeSettings} 
+        onClose={() => setShowTimeSettings(false)}
+        timeSlot={timeSlotConfig}
+        onSaveTimeSlot={handleSaveTimeSlot}
       />
     </div>
   );

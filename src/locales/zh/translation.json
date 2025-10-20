@@ -315,5 +315,19 @@
       "placeholder": "请输入文件名",
       "extension": "扩展名将自动添加"
     }
+  },
+  "time_settings": {
+    "title": "时间设置"
+  },
+  "semester_settings": {
+    "title": "学期设置",
+    "start_date": "学期开始日期",
+    "end_date": "学期结束日期",
+    "save": "保存学期设置",
+    "reset": "重置",
+    "save_success": "学期设置保存成功",
+    "reset_success": "学期设置已重置",
+    "please_set_dates": "请设置学期开始和结束日期",
+    "start_must_be_earlier": "学期开始日期必须早于结束日期"
   }
 }

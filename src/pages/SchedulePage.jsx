@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import WeeklyScheduleCalendar from '../components/schedule/WeeklyScheduleCalendar';
 import AddCourseModal from '../components/modals/AddCourseModal';
-import TimeSlotConfigModal from '../components/schedule/TimeSlotConfigModal'; // 修正导入路径
+import TimeSettingsModal from '../components/modals/TimeSettingsModal'; // 导入新的时间设置模态框
 import { useTranslation } from 'react-i18next';
 import { getCurrentWeekNumber, isInSemester } from '../utils/semesterUtils';
 
@@ -11,7 +11,7 @@ const SchedulePage = () => {
   const { t } = useTranslation();
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
-  const [showTimeSlotConfigModal, setShowTimeSlotConfigModal] = useState(false); // 添加时间线配置模态框状态
+  const [showTimeSettingsModal, setShowTimeSettingsModal] = useState(false); // 更新状态名称
   const [currentSemesterWeek, setCurrentSemesterWeek] = useState(0);
   const [inSemester, setInSemester] = useState(false);
   const [timeSlotConfig, setTimeSlotConfig] = useState({
@@ -100,8 +100,7 @@ const SchedulePage = () => {
     const event = new CustomEvent('timeSlotConfigUpdated', { detail: config });
     window.dispatchEvent(event);
     
-    // 关闭模态框
-    setShowTimeSlotConfigModal(false);
+    // 注意：这里不再关闭模态框，因为新的模态框包含学期设置和时间线设置两个部分
   };
 
   return (
@@ -114,9 +113,9 @@ const SchedulePage = () => {
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          {/* 添加时间线配置按钮 */}
+          {/* 添加时间设置按钮 */}
           <button
-            onClick={() => setShowTimeSlotConfigModal(true)}
+            onClick={() => setShowTimeSettingsModal(true)}
             className="bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-full shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center w-8 h-8"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -152,12 +151,12 @@ const SchedulePage = () => {
         onAddCourse={handleAddCourse}
       />
       
-      {/* 时间线配置弹窗 */}
-      <TimeSlotConfigModal
-        isOpen={showTimeSlotConfigModal}
-        onClose={() => setShowTimeSlotConfigModal(false)}
+      {/* 时间设置弹窗 */}
+      <TimeSettingsModal
+        isOpen={showTimeSettingsModal}
+        onClose={() => setShowTimeSettingsModal(false)}
         timeSlot={timeSlotConfig}
-        onSave={handleSaveTimeSlotConfig}
+        onSaveTimeSlot={handleSaveTimeSlotConfig}
       />
     </div>
   );

@@ -336,5 +336,19 @@
     },
     "file_name": "File Name",
     "enter_file_name": "Please enter file name"
+  },
+  "time_settings": {
+    "title": "Time Settings"
+  },
+  "semester_settings": {
+    "title": "Semester Settings",
+    "start_date": "Semester Start Date",
+    "end_date": "Semester End Date",
+    "save": "Save Semester Settings",
+    "reset": "Reset",
+    "save_success": "Semester settings saved successfully",
+    "reset_success": "Semester settings reset",
+    "please_set_dates": "Please set semester start and end dates",
+    "start_must_be_earlier": "Semester start date must be earlier than end date"
   }
 }
