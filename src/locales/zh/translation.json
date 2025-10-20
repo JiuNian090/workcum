@@ -257,12 +257,15 @@
     "replace": "替换"
   },
   "time_slot_config": {
-    "title": "时间段配置",
+    "title": "时间线配置",
+    "description": "点击修改时间线的起止时间。配置将保存在本地存储中。",
     "start_time": "开始时间",
     "end_time": "结束时间",
-    "group_name": "时间段组",
-    "save_success": "时间段配置保存成功",
-    "confirm_delete": "确定要删除这个时间段吗？"
+    "group_name": "时间线组",
+    "save_success": "时间线配置保存成功",
+    "confirm_delete": "确定要删除这个时间线吗？",
+    "invalid_time_format": "请输入正确的时间格式 (HH:MM)",
+    "start_time_must_be_earlier": "开始时间必须早于结束时间"
   },
   "shifts": {
     "custom_shifts": "自定义课程",

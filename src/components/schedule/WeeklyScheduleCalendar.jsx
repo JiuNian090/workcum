@@ -42,6 +42,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   });
   const [showReplaceModal, setShowReplaceModal] = useState(false);
   const [selectedDateForReplace, setSelectedDateForReplace] = useState(null);
+  // 添加自定义时间线配置状态
+  const [timeSlotConfig, setTimeSlotConfig] = useState({
+    start: '08:00',
+    end: '22:00'
+  });
   
   // 处理合并选择的单元格
   const handleMergeSelection = useCallback((cells) => {
@@ -94,6 +99,11 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
         const savedCourses = JSON.parse(e.newValue || '[]');
         setCourses(savedCourses);
       }
+      // 监听时间线配置变化
+      if (e.key === 'timeSlotConfig') {
+        const savedConfig = JSON.parse(e.newValue || '{"start": "08:00", "end": "22:00"}');
+        setTimeSlotConfig(savedConfig);
+      }
     };
 
     // 监听自定义的coursesUpdated事件
@@ -101,13 +111,20 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
       setCourses(e.detail);
     };
 
+    // 监听自定义的timeSlotConfigUpdated事件
+    const handleTimeSlotConfigUpdated = (e) => {
+      setTimeSlotConfig(e.detail);
+    };
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('coursesUpdated', handleCoursesUpdated);
+    window.addEventListener('timeSlotConfigUpdated', handleTimeSlotConfigUpdated);
     
     // Cleanup event listener on component unmount
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('coursesUpdated', handleCoursesUpdated);
+      window.removeEventListener('timeSlotConfigUpdated', handleTimeSlotConfigUpdated);
     };
   }, []);
 
@@ -129,6 +146,14 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
   useEffect(() => {
     const savedCourses = JSON.parse(localStorage.getItem('courses') || '[]');
     setCourses(savedCourses);
+  }, []);
+
+  // Load time slot configuration from localStorage
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('timeSlotConfig');
+    if (savedConfig) {
+      setTimeSlotConfig(JSON.parse(savedConfig));
+    }
   }, []);
 
   // 监听学期设置变化
@@ -159,16 +184,20 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     };
   }, []);
 
-  // 设置静态时间线 - 只显示小时，从8:00到22:00
+  // 设置时间线 - 根据自定义配置生成时间段
   const timeSlots = [];
-  for (let hour = 8; hour <= 22; hour++) {
-    const startHour = hour.toString().padStart(2, '0');
-    const endHour = (hour + 1).toString().padStart(2, '0');
+  const [startHour, startMinute] = timeSlotConfig.start.split(':').map(Number);
+  const [endHour, endMinute] = timeSlotConfig.end.split(':').map(Number);
+  
+  // 生成时间段，每小时一个时间段
+  for (let hour = startHour; hour < endHour; hour++) {
+    const startHourStr = hour.toString().padStart(2, '0');
+    const endHourStr = (hour + 1).toString().padStart(2, '0');
     
     timeSlots.push({
-      id: hour - 7, // ID从1开始
-      start: `${startHour}:00`,
-      end: `${endHour}:00`
+      id: hour - startHour + 1, // ID从1开始
+      start: `${startHourStr}:00`,
+      end: `${endHourStr}:00`
     });
   }
 
@@ -310,8 +339,9 @@ const WeeklyScheduleCalendar = ({ currentDate, onDateChange }) => {
     const startMinutes = timeToMinutes(startTime);
     const endMinutes = timeToMinutes(endTime);
     
-    // 计算相对于8:00的偏移量（分钟）
-    const dayStartMinutes = 8 * 60; // 8:00 AM
+    // 计算相对于自定义起始时间的偏移量（分钟）
+    const [startHour, startMinute] = timeSlotConfig.start.split(':').map(Number);
+    const dayStartMinutes = startHour * 60 + startMinute; // 使用自定义起始时间
     const offsetMinutes = startMinutes - dayStartMinutes;
     
     // 计算持续时间（分钟）

@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import WeeklyScheduleCalendar from '../components/schedule/WeeklyScheduleCalendar';
 import AddCourseModal from '../components/modals/AddCourseModal';
+import TimeSlotConfigModal from '../components/schedule/TimeSlotConfigModal'; // 修正导入路径
 import { useTranslation } from 'react-i18next';
 import { getCurrentWeekNumber, isInSemester } from '../utils/semesterUtils';
 
@@ -10,8 +11,13 @@ const SchedulePage = () => {
   const { t } = useTranslation();
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
+  const [showTimeSlotConfigModal, setShowTimeSlotConfigModal] = useState(false); // 添加时间线配置模态框状态
   const [currentSemesterWeek, setCurrentSemesterWeek] = useState(0);
   const [inSemester, setInSemester] = useState(false);
+  const [timeSlotConfig, setTimeSlotConfig] = useState({
+    start: '08:00',
+    end: '22:00'
+  });
 
   // 监听学期设置变化
   useEffect(() => {
@@ -28,6 +34,11 @@ const SchedulePage = () => {
       if (e.key === 'semesterSettings') {
         updateSemesterInfo();
       }
+      // 监听时间线配置变化
+      if (e.key === 'timeSlotConfig') {
+        const savedConfig = JSON.parse(e.newValue || '{"start": "08:00", "end": "22:00"}');
+        setTimeSlotConfig(savedConfig);
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -39,6 +50,14 @@ const SchedulePage = () => {
       window.removeEventListener('storage', handleStorageChange);
       clearInterval(intervalId);
     };
+  }, []);
+
+  // 加载时间线配置
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('timeSlotConfig');
+    if (savedConfig) {
+      setTimeSlotConfig(JSON.parse(savedConfig));
+    }
   }, []);
 
   // Get week range for display
@@ -71,6 +90,20 @@ const SchedulePage = () => {
     console.log('课程已添加:', coursesToAdd);
   };
 
+  // 处理保存时间线配置
+  const handleSaveTimeSlotConfig = (config) => {
+    // 保存到localStorage
+    localStorage.setItem('timeSlotConfig', JSON.stringify(config));
+    setTimeSlotConfig(config);
+    
+    // 创建自定义事件通知时间线配置更新
+    const event = new CustomEvent('timeSlotConfigUpdated', { detail: config });
+    window.dispatchEvent(event);
+    
+    // 关闭模态框
+    setShowTimeSlotConfigModal(false);
+  };
+
   return (
     <div className="max-w-6xl mx-auto w-full px-1 sm:px-2 h-full flex flex-col">
       <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -80,14 +113,26 @@ const SchedulePage = () => {
             {getWeekRange(currentWeek)}
           </span>
         </div>
-        <button
-          onClick={() => setShowAddCourseModal(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-full shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center w-8 h-8"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-          </svg>
-        </button>
+        <div className="flex items-center space-x-2">
+          {/* 添加时间线配置按钮 */}
+          <button
+            onClick={() => setShowTimeSlotConfigModal(true)}
+            className="bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-full shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center w-8 h-8"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </button>
+          <button
+            onClick={() => setShowAddCourseModal(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-full shadow-sm transition-all duration-200 hover:shadow-md flex items-center justify-center w-8 h-8"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+          </button>
+        </div>
       </div>
       
       <div className="p-0.5 sm:p-1 md:p-2 mt-1 mb-0.5 flex-grow flex flex-col">
@@ -105,6 +150,14 @@ const SchedulePage = () => {
         onClose={() => setShowAddCourseModal(false)}
         currentWeek={currentWeek}
         onAddCourse={handleAddCourse}
+      />
+      
+      {/* 时间线配置弹窗 */}
+      <TimeSlotConfigModal
+        isOpen={showTimeSlotConfigModal}
+        onClose={() => setShowTimeSlotConfigModal(false)}
+        timeSlot={timeSlotConfig}
+        onSave={handleSaveTimeSlotConfig}
       />
     </div>
   );

@@ -223,12 +223,15 @@
     }
   },
   "time_slot_config": {
-    "title": "Time Slot Configuration",
+    "title": "Timeline Configuration",
+    "description": "Click to modify the timeline start and end times. Configuration will be saved in local storage.",
     "start_time": "Start Time",
     "end_time": "End Time",
-    "group_name": "Time Slot Group",
-    "save_success": "Time slot configuration saved successfully",
-    "confirm_delete": "Are you sure you want to delete this time slot?"
+    "group_name": "Timeline Group",
+    "save_success": "Timeline configuration saved successfully",
+    "confirm_delete": "Are you sure you want to delete this timeline?",
+    "invalid_time_format": "Please enter the correct time format (HH:MM)",
+    "start_time_must_be_earlier": "Start time must be earlier than end time"
   },
   "shifts": {
       "custom_shifts": "Custom Courses",
